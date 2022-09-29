@@ -11,3 +11,5 @@ Auto quick math solver
 -Sends notification
 -Can auto copy to clipboard
 -(Bannable) Can auto answer
+
+[License](https://github.com/ChrisTechs/PitHelper/blob/master/LICENSE.md)
