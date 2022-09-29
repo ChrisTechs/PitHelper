@@ -1,0 +1,17 @@
+[
+  {
+    "modid": "pithelper",
+    "name": "PitHelper",
+    "description": "Helpful Hypixel Pit Utilities",
+    "version": "0.0.1",
+    "mcversion": "1.8.9",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [
+      "Christian"
+    ],
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
