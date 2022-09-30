@@ -1,5 +1,19 @@
 # PitHelper
 
+# Compile Yourself
+
+I think you may need Java 16 or above for this 
+to compile
+
+This is for linux windows should be similar
+
+git clone https://github.com/ChrisTechs/PitHelper
+cd PitHelper/
+./gradlew remapJar
+cd build/libs/
+
+# Features
+
 Customize in /pithelper settings
 
 Has upcoming and current event menu
