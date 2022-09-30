@@ -8,8 +8,11 @@ to compile
 This is for linux windows should be similar
 
 git clone https://github.com/ChrisTechs/PitHelper
+
 cd PitHelper/
+
 ./gradlew remapJar
+
 cd build/libs/
 
 # Features
