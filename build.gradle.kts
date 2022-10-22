@@ -3,10 +3,10 @@ import xyz.unifycraft.gradle.utils.GameSide
 plugins {
     java
     kotlin("jvm") version("1.6.21")
+    kotlin("plugin.serialization") version("1.6.21")
     val ucgt = "1.11.1"
     id("xyz.unifycraft.gradle.tools") version(ucgt)
     id("xyz.unifycraft.gradle.tools.loom") version(ucgt)
-    id("xyz.unifycraft.gradle.tools.blossom") version(ucgt)
     id("xyz.unifycraft.gradle.tools.shadow") version(ucgt)
 }
 

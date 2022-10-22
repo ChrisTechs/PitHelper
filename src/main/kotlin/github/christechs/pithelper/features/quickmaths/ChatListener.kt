@@ -3,12 +3,9 @@ package github.christechs.pithelper.features.quickmaths
 import com.notkamui.keval.Keval
 import gg.essential.api.EssentialAPI
 import gg.essential.universal.ChatColor
-import github.christechs.pithelper.Tasks
-import github.christechs.pithelper.config.PitSolverConfig
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import github.christechs.pithelper.config.PitHelperConfig
+import github.christechs.pithelper.utils.Tasks
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.minecraft.client.Minecraft
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.util.ResourceLocation
@@ -30,11 +27,11 @@ object ChatListener {
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
 
-        if (PitSolverConfig.hypixelOnly && !EssentialAPI.getMinecraftUtil().isHypixel()) return
+        if (PitHelperConfig.hypixelOnly && !EssentialAPI.getMinecraftUtil().isHypixel()) return
 
-        if (!PitSolverConfig.enabled) return
+        if (!PitHelperConfig.enabled) return
 
-        if (!PitSolverConfig.quickMaths) return
+        if (!PitHelperConfig.quickMaths) return
 
         val message = STRIP_COLOR_PATTERN.matcher(event.message.unformattedText.lowercase()).replaceAll("")
 
@@ -49,18 +46,17 @@ object ChatListener {
             if (result.split(".")[1].toLong() <= 0)
                 result = result.split(".")[0].replace(".", "")
 
-            if (PitSolverConfig.quickMathsAutoAnswer) {
+            if (PitHelperConfig.quickMathsAutoAnswer) {
 
-                val delay = PitSolverConfig.quickMathsAutoAnswerDelay +
-                        random.nextFloat() * PitSolverConfig.quickMathsAutoAnswerOffset
+                val delay = 4 + random.nextFloat()
 
-                Tasks.scheduleTask({
+                Tasks.runAsyncTask({
                     Minecraft.getMinecraft().thePlayer.sendChatMessage(result)
                 }, (delay * 1000).toLong(), TimeUnit.MILLISECONDS)
 
             }
 
-            if (PitSolverConfig.quickMathsClipboard) {
+            if (PitHelperConfig.quickMathsClipboard) {
                 copyToClipboard(result)
             }
 
@@ -76,7 +72,7 @@ object ChatListener {
                 ChatColor.translateAlternateColorCodes(
                     '&',
                     "&6&lAnswer: $result. " +
-                            if (PitSolverConfig.quickMathsClipboard) "\nCopied answer to clipboard" else ""
+                            if (PitHelperConfig.quickMathsClipboard) "\nCopied answer to clipboard" else ""
                 )
             )
 
@@ -91,17 +87,18 @@ object ChatListener {
         clipboard.setContents(selection, selection)
     }
 
-    private val sound = PositionedSoundRecord.create(
-        ResourceLocation("note.harp")
-    )
 
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun playSound() = GlobalScope.launch {
+    private fun playSound() {
+        Tasks.runAsyncTask({
 
-        for (i in 0 until 10) {
-            delay(100)
-            Minecraft.getMinecraft().soundHandler.playSound(sound)
-        }
+            for (i in 0 until 10) {
+                delay(100)
+                Minecraft.getMinecraft().soundHandler.playSound(PositionedSoundRecord.create(
+                    ResourceLocation("note.harp")
+                ))
+            }
+
+        })
     }
 
 }

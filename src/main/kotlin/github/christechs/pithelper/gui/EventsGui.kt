@@ -119,7 +119,7 @@ object EventsGui : WindowScreen(ElementaVersion.V2) {
                 height = textHeight * 1.5
             } childOf container
 
-            val text = UIText("EventText", false).constrain {
+            val text = UIText("Loading Event...", false).constrain {
                 x = CenterConstraint()
                 y = CenterConstraint() + (block.getHeight() * 0.07).pixels()
 
@@ -134,6 +134,7 @@ object EventsGui : WindowScreen(ElementaVersion.V2) {
 
             height = 10.pixels()
         } childOf scroll
+
     }
 
 }

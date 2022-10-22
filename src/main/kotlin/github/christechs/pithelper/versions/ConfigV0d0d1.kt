@@ -1,17 +1,29 @@
-package github.christechs.pithelper.config
+package github.christechs.pithelper.versions
 
 import gg.essential.universal.ChatColor
 import gg.essential.vigilance.Vigilant
+import gg.essential.vigilance.data.Category
 import gg.essential.vigilance.data.Property
 import gg.essential.vigilance.data.PropertyType
+import gg.essential.vigilance.data.SortingBehavior
 import net.minecraft.launchwrapper.Launch
 
-object PitSolverConfig : Vigilant(
+class ConfigV0d0d1 : Vigilant(
+
     Launch.minecraftHome
         .resolve("config/ChrisTechs/PitHelper/config.toml")
         .also { it.parentFile.mkdirs() },
+
     guiTitle = "${ChatColor.GREEN}PitHelper",
-    sortingBehavior = PitSortingBehaviour
+
+    sortingBehavior = object: SortingBehavior() {
+
+        override fun getCategoryComparator(): Comparator<in Category> {
+            return compareBy({ it.name != "General" }, { it.name })
+        }
+
+    }
+
 ) {
 
     // General

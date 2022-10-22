@@ -4,10 +4,10 @@ import gg.essential.api.EssentialAPI
 import gg.essential.api.commands.Command
 import gg.essential.api.commands.DefaultHandler
 import gg.essential.api.commands.SubCommand
-import github.christechs.pithelper.config.PitSolverConfig
+import github.christechs.pithelper.config.PitHelperConfig
 import github.christechs.pithelper.gui.EventsGui
 
-object PitSolverCommands : Command("pithelper") {
+object PitHelperCommands : Command("pithelper") {
 
     @SubCommand("events")
     fun events() {
@@ -16,12 +16,12 @@ object PitSolverCommands : Command("pithelper") {
 
     @SubCommand("settings")
     fun settings() {
-        EssentialAPI.getGuiUtil().openScreen(PitSolverConfig.gui())
+        EssentialAPI.getGuiUtil().openScreen(PitHelperConfig.gui())
     }
 
     @DefaultHandler
     fun execute() {
-        EssentialAPI.getGuiUtil().openScreen(PitSolverConfig.gui())
+        EssentialAPI.getGuiUtil().openScreen(PitHelperConfig.gui())
     }
 
 }
