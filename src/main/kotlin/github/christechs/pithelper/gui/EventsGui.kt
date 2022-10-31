@@ -1,140 +1,1 @@
-package github.christechs.pithelper.gui
-
-import gg.essential.elementa.ElementaVersion
-import gg.essential.elementa.WindowScreen
-import gg.essential.elementa.components.*
-import gg.essential.elementa.constraints.CenterConstraint
-import gg.essential.elementa.constraints.SiblingConstraint
-import gg.essential.elementa.dsl.*
-import gg.essential.elementa.effects.ScissorEffect
-import github.christechs.pithelper.features.events.Event
-import github.christechs.pithelper.features.events.EventsHandler
-import java.awt.Color
-
-object EventsGui : WindowScreen(ElementaVersion.V2) {
-
-    private val eventsToText = mutableMapOf<Int, Pair<UIText, UIContainer>>()
-
-    private var scroll = ScrollComponent().constrain {
-        x = 0f.pixels()
-        y = 0f.pixels()
-        width = window.getWidth().pixels()
-        height = window.getHeight().pixels()
-    }
-
-    fun removeEvent(id: Int) {
-        scroll.removeChild(eventsToText[id]?.second ?: return)
-        eventsToText.remove(id)
-    }
-
-    fun setText(id: Int, text: String) {
-        (eventsToText[id] ?: return).first.setText(text)
-    }
-
-    var activeEventText = UIText()
-
-    fun refreshEvents(events: List<Event>) {
-
-        eventsToText.clear()
-        window.clearChildren()
-        scroll.clearChildren()
-
-        scroll = ScrollComponent().constrain {
-            x = 0f.pixels()
-            y = 0f.pixels()
-            width = window.getWidth().pixels()
-            height = window.getHeight().pixels()
-        }
-
-        window.addChild(scroll)
-
-        val textHeight = UIText("TEXT HEIGHT").getHeight().pixels()
-
-        UIBlock(Color(0, 0, 0, 255)).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(padding = 2f)
-
-            height = 10.pixels()
-        } childOf scroll
-
-        val refresh = UIBlock(Color(255, 0, 0)).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(padding = 2f)
-
-            height = textHeight * 2
-            width = window.getWidth().pixels() * 0.3
-        } effect ScissorEffect() childOf scroll
-
-        refresh.onMouseClick {
-            EventsHandler.refresh()
-        }
-        refresh.onMouseEnter {
-            refresh.setColor(Color(255, 0, 0, 100))
-        }
-        refresh.onMouseLeave {
-            refresh.setColor(Color(255, 0, 0))
-        }
-
-        refresh.addChild(UIWrappedText("Load Events", centered = true).constrain {
-            x = 2.pixels()
-            y = SiblingConstraint() + 5.pixels()
-
-            width = refresh.getWidth().pixels()
-        })
-
-        val activeEventContainer = UIContainer().constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(padding = 2f)
-
-            width = window.getWidth().pixels()
-            height = textHeight * 1.5
-        } childOf scroll
-
-        val activeEventBlock = UIBlock(Color(255, 170, 0)).constrain {
-            x = CenterConstraint()
-
-            width = (window.getWidth() * 0.95).pixels()
-            height = textHeight * 1.5
-        } childOf activeEventContainer
-
-        activeEventText = UIText("No Active Event", false).constrain {
-            x = CenterConstraint()
-            y = CenterConstraint() + (activeEventBlock.getHeight() * 0.07).pixels()
-
-        } childOf activeEventContainer
-
-        for (event in events) {
-            val container = UIContainer().constrain {
-                x = CenterConstraint()
-                y = SiblingConstraint(padding = 2f)
-
-                width = window.getWidth().pixels()
-                height = textHeight * 1.5
-            } childOf scroll
-
-            val block = UIBlock(event.event.colour).constrain {
-                x = CenterConstraint()
-
-                width = (window.getWidth() * 0.95).pixels()
-                height = textHeight * 1.5
-            } childOf container
-
-            val text = UIText("Loading Event...", false).constrain {
-                x = CenterConstraint()
-                y = CenterConstraint() + (block.getHeight() * 0.07).pixels()
-
-            } childOf container
-
-            eventsToText[event.id] = Pair(text, container)
-        }
-
-        UIBlock(Color(0, 0, 0, 255)).constrain {
-            x = CenterConstraint()
-            y = SiblingConstraint(padding = 2f)
-
-            height = 10.pixels()
-        } childOf scroll
-
-    }
-
-}
+/*                Copyright (c) EssentialsGG and contributors                   GNU LESSER GENERAL PUBLIC LICENSE                       Version 3, 29 June 2007 Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/> Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.  This version of the GNU Lesser General Public License incorporatesthe terms and conditions of version 3 of the GNU General PublicLicense, supplemented by the additional permissions listed below.  0. Additional Definitions.  As used herein, "this License" refers to version 3 of the GNU LesserGeneral Public License, and the "GNU GPL" refers to version 3 of the GNUGeneral Public License.  "The Library" refers to a covered work governed by this License,other than an Application or a Combined Work as defined below.  An "Application" is any work that makes use of an interface providedby the Library, but which is not otherwise based on the Library.Defining a subclass of a class defined by the Library is deemed a modeof using an interface provided by the Library.  A "Combined Work" is a work produced by combining or linking anApplication with the Library.  The particular version of the Librarywith which the Combined Work was made is also called the "LinkedVersion".  The "Minimal Corresponding Source" for a Combined Work means theCorresponding Source for the Combined Work, excluding any source codefor portions of the Combined Work that, considered in isolation, arebased on the Application, and not on the Linked Version.  The "Corresponding Application Code" for a Combined Work means theobject code and/or source code for the Application, including any dataand utility programs needed for reproducing the Combined Work from theApplication, but excluding the System Libraries of the Combined Work.  1. Exception to Section 3 of the GNU GPL.  You may convey a covered work under sections 3 and 4 of this Licensewithout being bound by section 3 of the GNU GPL.  2. Conveying Modified Versions.  If you modify a copy of the Library, and, in your modifications, afacility refers to a function or data to be supplied by an Applicationthat uses the facility (other than as an argument passed when thefacility is invoked), then you may convey a copy of the modifiedversion:   a) under this License, provided that you make a good faith effort to   ensure that, in the event an Application does not supply the   function or data, the facility still operates, and performs   whatever part of its purpose remains meaningful, or   b) under the GNU GPL, with none of the additional permissions of   this License applicable to that copy.  3. Object Code Incorporating Material from Library Header Files.  The object code form of an Application may incorporate material froma header file that is part of the Library.  You may convey such objectcode under terms of your choice, provided that, if the incorporatedmaterial is not limited to numerical parameters, data structurelayouts and accessors, or small macros, inline functions and templates(ten or fewer lines in length), you do both of the following:   a) Give prominent notice with each copy of the object code that the   Library is used in it and that the Library and its use are   covered by this License.   b) Accompany the object code with a copy of the GNU GPL and this license   document.  4. Combined Works.  You may convey a Combined Work under terms of your choice that,taken together, effectively do not restrict modification of theportions of the Library contained in the Combined Work and reverseengineering for debugging such modifications, if you also do each ofthe following:   a) Give prominent notice with each copy of the Combined Work that   the Library is used in it and that the Library and its use are   covered by this License.   b) Accompany the Combined Work with a copy of the GNU GPL and this license   document.   c) For a Combined Work that displays copyright notices during   execution, include the copyright notice for the Library among   these notices, as well as a reference directing the user to the   copies of the GNU GPL and this license document.   d) Do one of the following:       0) Convey the Minimal Corresponding Source under the terms of this       License, and the Corresponding Application Code in a form       suitable for, and under terms that permit, the user to       recombine or relink the Application with a modified version of       the Linked Version to produce a modified Combined Work, in the       manner specified by section 6 of the GNU GPL for conveying       Corresponding Source.       1) Use a suitable shared library mechanism for linking with the       Library.  A suitable mechanism is one that (a) uses at run time       a copy of the Library already present on the user's computer       system, and (b) will operate properly with a modified version       of the Library that is interface-compatible with the Linked       Version.   e) Provide Installation Information, but only if you would otherwise   be required to provide such information under section 6 of the   GNU GPL, and only to the extent that such information is   necessary to install and execute a modified version of the   Combined Work produced by recombining or relinking the   Application with a modified version of the Linked Version. (If   you use option 4d0, the Installation Information must accompany   the Minimal Corresponding Source and Corresponding Application   Code. If you use option 4d1, you must provide the Installation   Information in the manner specified by section 6 of the GNU GPL   for conveying Corresponding Source.)  5. Combined Libraries.  You may place library facilities that are a work based on theLibrary side by side in a single library together with other libraryfacilities that are not Applications and are not covered by thisLicense, and convey such a combined library under terms of yourchoice, if you do both of the following:   a) Accompany the combined library with a copy of the same work based   on the Library, uncombined with any other library facilities,   conveyed under the terms of this License.   b) Give prominent notice with the combined library that part of it   is a work based on the Library, and explaining where to find the   accompanying uncombined form of the same work.  6. Revised Versions of the GNU Lesser General Public License.  The Free Software Foundation may publish revised and/or new versionsof the GNU Lesser General Public License from time to time. Such newversions will be similar in spirit to the present version, but maydiffer in detail to address new problems or concerns.  Each version is given a distinguishing version number. If theLibrary as you received it specifies that a certain numbered versionof the GNU Lesser General Public License "or any later version"applies to it, you have the option of following the terms andconditions either of that published version or of any later versionpublished by the Free Software Foundation. If the Library as youreceived it does not specify a version number of the GNU LesserGeneral Public License, you may choose any version of the GNU LesserGeneral Public License ever published by the Free Software Foundation.  If the Library as you received it specifies that a proxy can decidewhether future versions of the GNU Lesser General Public License shallapply, that proxy's public statement of acceptance of any version ispermanent authorization for you to choose that version for theLibrary.*/package github.christechs.pithelper.guiimport gg.essential.elementa.ElementaVersionimport gg.essential.elementa.UIComponentimport gg.essential.elementa.WindowScreenimport gg.essential.elementa.components.ScrollComponentimport gg.essential.elementa.components.UIBlockimport gg.essential.elementa.components.UIContainerimport gg.essential.elementa.components.inspector.Inspectorimport gg.essential.elementa.constraints.AspectConstraintimport gg.essential.elementa.constraints.CenterConstraintimport gg.essential.elementa.constraints.FillConstraintimport gg.essential.elementa.constraints.SiblingConstraintimport gg.essential.elementa.dsl.*import gg.essential.elementa.effects.ScissorEffectimport gg.essential.universal.GuiScaleimport gg.essential.universal.UKeyboardimport gg.essential.vigilance.data.PropertyTypeimport gg.essential.vigilance.gui.settings.AbstractSliderComponentimport gg.essential.vigilance.gui.settings.ButtonComponentimport gg.essential.vigilance.gui.settings.CheckboxComponentimport gg.essential.vigilance.gui.settings.NumberComponentimport gg.essential.vigilance.utils.onLeftClickimport github.christechs.pithelper.features.events.Eventimport github.christechs.pithelper.features.events.EventTypesimport github.christechs.pithelper.features.events.EventsHandlerimport github.christechs.pithelper.gui.essentials.*import java.awt.Colorobject EventsGui : WindowScreen(    version = ElementaVersion.V2,    newGuiScale = GuiScale.scaleForScreenSize().ordinal,    restoreCurrentGuiOnClose = true) {    const val dividerWidth = 3f    private val background by UIBlock(VigilancePalette.mainBackground).constrain {        width = 100.percent        height = 100.percent    } childOf window    private val container by UIContainer().constrain {        x = CenterConstraint()        y = CenterConstraint()        width = 85.percent        height = 75.percent    } childOf window    private val titleBar by EventsTitleBar(this) childOf container    private val bottomContainer by UIContainer().constrain {        y = SiblingConstraint()        width = 100.percent        height = FillConstraint()    } childOf container    private val leftDivider by UIBlock(VigilancePalette.dividerDark).constrain {        width = dividerWidth.pixels        height = 100.percent    } childOf bottomContainer    private val sidebar by UIContainer().constrain {        x = SiblingConstraint()        width = 25.percent        height = 100.percent    } effect ScissorEffect() childOf bottomContainer    private val middleDivider by UIBlock(VigilancePalette.dividerDark).constrain {        x = SiblingConstraint()        width = dividerWidth.pixels        height = 100.percent    } childOf bottomContainer    private val sidebarScroller by ScrollComponent(        "No matching settings found :(",        innerPadding = 10f,        pixelsPerScroll = 25f,    ).constrain {        width = 100.percent        height = 100.percent - dividerWidth.pixels    } childOf sidebar scrollGradient 20.pixels    private val sidebarVerticalScrollbar by UIBlock(VigilancePalette.scrollbar).constrain {        width = 100.percent    } childOf middleDivider    private val rightDivider by UIBlock(VigilancePalette.dividerDark).constrain {        x = 0.pixels(alignOpposite = true)        width = dividerWidth.pixels        height = 100.percent    } childOf bottomContainer    private val content by UIContainer().constrain {        x = SiblingConstraint() boundTo middleDivider        width = FillConstraint(useSiblings = false)        height = 100.percent    } effect (ScissorEffect()) childOf bottomContainer    private val bottomDivider by UIBlock(VigilancePalette.dividerDark).constrain {        y = SiblingConstraint()        width = 100.percent        height = dividerWidth.pixels    } childOf container    private val sidebarHorizontalScrollbarContainer by UIContainer().constrain {        x = 0.pixels boundTo sidebar        width = 100.percent boundTo sidebar        height = dividerWidth.pixels    } childOf bottomDivider    private val sidebarHorizontalScrollbar by UIBlock(VigilancePalette.scrollbar).constrain {        height = 100.percent    } childOf sidebarHorizontalScrollbarContainer    private val backButton by IconButton(VigilancePalette.CANCEL_5X).constrain {        x = SiblingConstraint(18f, alignOpposite = true) boundTo titleBar        y = CenterConstraint() boundTo titleBar        width = 17.pixels        height = AspectConstraint()    } childOf window    val categories: MutableList<Category> = arrayListOf(Category("Loading...", mutableListOf(), ""))    private var currentCategory = SettingsCategory(categories.first()) childOf content    private val idToEvent = mutableMapOf<Int, PropertyItem>()    fun setText(id: Int, text: String) {        ((idToEvent[id] ?: return).settingsObject as DataBackedSetting)            .description.setText(text)    }    fun refreshEvents(events: List<Event>) {        sidebarScroller.clearChildren()        idToEvent.clear()        categories.clear()        val loadingCat = Category("Refresh Events", mutableListOf(            PropertyItem(PropertyData(                PropertyAttributesExt(                    PropertyType.BUTTON,                    "Refresh Events", "",                ), Runnable {                    EventsHandler.refresh()                }            ), "")        ), null)        categories.add(loadingCat)        CategoryLabel(this, loadingCat) childOf sidebarScroller        val eventItems = mutableListOf<PropertyItem>()        val minorEvents = mutableListOf<PropertyItem>()        val majorEvents = mutableListOf<PropertyItem>()        for ((i, event) in events.withIndex()) {            val item = PropertyItem(                PropertyData(                    PropertyAttributesExt(                        PropertyType.TEXT,                        "${event.event.eventName} | ${event.type.name} event", "",                        searchTags = listOf(                            event.type.eventTypeName,                            event.date,                            event.event.name,                            event.event.eventName                        )                    ), ""                ), ""            )            eventItems.add(item)            if (event.type == EventTypes.MINOR)                minorEvents.add(item)            if (event.type == EventTypes.MAJOR)                majorEvents.add(item)            idToEvent[event.id] = item        }        val eventsCat = Category("Events", eventItems, "All Events")        val majorEventsCat = Category("Major Events", majorEvents, "Major Events")        val minorEventsCat = Category("Minor Events", minorEvents, "Minor Events")        categories.add(eventsCat)        categories.add(majorEventsCat)        categories.add(minorEventsCat)        CategoryLabel(this, eventsCat) childOf sidebarScroller        CategoryLabel(this, majorEventsCat) childOf sidebarScroller        CategoryLabel(this, minorEventsCat) childOf sidebarScroller        selectCategory(eventsCat)    }    init {        val loadingCat = Category("Refresh Events", mutableListOf(            PropertyItem(PropertyData(                PropertyAttributesExt(                    PropertyType.BUTTON,                    "Refresh Events", "",                ), Runnable {                    EventsHandler.refresh()                }            ), "")        ), null)        categories.add(loadingCat)        CategoryLabel(this, loadingCat) childOf sidebarScroller        val backButtonColour = backButton.getColor()        backButton.onMouseEnter {            backButton.setColor(Color(255, 0, 0))        }        backButton.onMouseLeave {            backButton.setColor(backButtonColour)        }        backButton.onActiveClick { restorePreviousScreen() }        window.onLeftClick {            currentCategory.closePopups()        }        sidebarScroller.setVerticalScrollBarComponent(sidebarVerticalScrollbar, true)        sidebarScroller.setHorizontalScrollBarComponent(sidebarHorizontalScrollbar, true)        sidebarScroller.childrenOfType<CategoryLabel>().firstOrNull()?.select()        sidebarScroller.childrenOfType<gg.essential.vigilance.gui.CategoryLabel>().firstOrNull()?.select()        fun UIComponent.click(): Unit =            mouseClick(getLeft() + (getRight() - getLeft()) / 2.0, getTop() + (getBottom() - getTop()) / 2.0, 0)        window.onKeyType { _, keyCode ->            if (UKeyboard.isKeyDown(UKeyboard.KEY_MINUS)) {                Inspector(window) childOf window                return@onKeyType            }            currentCategory.scroller.childrenOfType<DataBackedSetting>().filter { it.isHovered() }.forEach { child ->                when (child.component) {                    is AbstractSliderComponent -> if (keyCode == UKeyboard.KEY_LEFT) {                        child.component.incrementBy(-.05f)                    } else if (keyCode == UKeyboard.KEY_RIGHT) {                        child.component.incrementBy(.05f)                    }                    is NumberComponent -> if (keyCode == UKeyboard.KEY_UP) {                        child.component.increment()                    } else if (keyCode == UKeyboard.KEY_DOWN) {                        child.component.decrement()                    }                    is SwitchComponent -> when (keyCode) {                        UKeyboard.KEY_LEFT -> if (child.component.enabled) child.component.click()                        UKeyboard.KEY_RIGHT -> if (!child.component.enabled) child.component.click()                        UKeyboard.KEY_ENTER -> child.component.click()                    }                    is CheckboxComponent -> if (keyCode == UKeyboard.KEY_ENTER) child.component.click()                    is ButtonComponent -> if (keyCode == UKeyboard.KEY_ENTER) child.component.click()                    is SelectorComponent -> if (keyCode == UKeyboard.KEY_UP) {                        child.component.dropDown.select(child.component.dropDown.selectedIndex.get() - 1)                    } else if (keyCode == UKeyboard.KEY_DOWN) {                        child.component.dropDown.select(child.component.dropDown.selectedIndex.get() + 1)                    }                }                return@forEach            }        }    }    fun selectCategory(category: Category) {        content.clearChildren()        val newCategory = SettingsCategory(category) childOf content        currentCategory.closePopups(true)        currentCategory.hide()        newCategory.unhide()        newCategory.scrollToTop()        currentCategory = newCategory        sidebarScroller.childrenOfType<CategoryLabel>().firstOrNull { it.isSelected }?.deselect()    }    override fun updateGuiScale() {        newGuiScale = GuiScale.scaleForScreenSize().ordinal        super.updateGuiScale()    }}

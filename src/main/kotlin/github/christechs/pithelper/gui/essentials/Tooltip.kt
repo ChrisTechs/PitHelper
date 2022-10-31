@@ -1,0 +1,383 @@
+/*
+                Copyright (c) EssentialsGG and contributors
+
+                   GNU LESSER GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+
+ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+
+  This version of the GNU Lesser General Public License incorporates
+the terms and conditions of version 3 of the GNU General Public
+License, supplemented by the additional permissions listed below.
+
+  0. Additional Definitions.
+
+  As used herein, "this License" refers to version 3 of the GNU Lesser
+General Public License, and the "GNU GPL" refers to version 3 of the GNU
+General Public License.
+
+  "The Library" refers to a covered work governed by this License,
+other than an Application or a Combined Work as defined below.
+
+  An "Application" is any work that makes use of an interface provided
+by the Library, but which is not otherwise based on the Library.
+Defining a subclass of a class defined by the Library is deemed a mode
+of using an interface provided by the Library.
+
+  A "Combined Work" is a work produced by combining or linking an
+Application with the Library.  The particular version of the Library
+with which the Combined Work was made is also called the "Linked
+Version".
+
+  The "Minimal Corresponding Source" for a Combined Work means the
+Corresponding Source for the Combined Work, excluding any source code
+for portions of the Combined Work that, considered in isolation, are
+based on the Application, and not on the Linked Version.
+
+  The "Corresponding Application Code" for a Combined Work means the
+object code and/or source code for the Application, including any data
+and utility programs needed for reproducing the Combined Work from the
+Application, but excluding the System Libraries of the Combined Work.
+
+  1. Exception to Section 3 of the GNU GPL.
+
+  You may convey a covered work under sections 3 and 4 of this License
+without being bound by section 3 of the GNU GPL.
+
+  2. Conveying Modified Versions.
+
+  If you modify a copy of the Library, and, in your modifications, a
+facility refers to a function or data to be supplied by an Application
+that uses the facility (other than as an argument passed when the
+facility is invoked), then you may convey a copy of the modified
+version:
+
+   a) under this License, provided that you make a good faith effort to
+   ensure that, in the event an Application does not supply the
+   function or data, the facility still operates, and performs
+   whatever part of its purpose remains meaningful, or
+
+   b) under the GNU GPL, with none of the additional permissions of
+   this License applicable to that copy.
+
+  3. Object Code Incorporating Material from Library Header Files.
+
+  The object code form of an Application may incorporate material from
+a header file that is part of the Library.  You may convey such object
+code under terms of your choice, provided that, if the incorporated
+material is not limited to numerical parameters, data structure
+layouts and accessors, or small macros, inline functions and templates
+(ten or fewer lines in length), you do both of the following:
+
+   a) Give prominent notice with each copy of the object code that the
+   Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the object code with a copy of the GNU GPL and this license
+   document.
+
+  4. Combined Works.
+
+  You may convey a Combined Work under terms of your choice that,
+taken together, effectively do not restrict modification of the
+portions of the Library contained in the Combined Work and reverse
+engineering for debugging such modifications, if you also do each of
+the following:
+
+   a) Give prominent notice with each copy of the Combined Work that
+   the Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the Combined Work with a copy of the GNU GPL and this license
+   document.
+
+   c) For a Combined Work that displays copyright notices during
+   execution, include the copyright notice for the Library among
+   these notices, as well as a reference directing the user to the
+   copies of the GNU GPL and this license document.
+
+   d) Do one of the following:
+
+       0) Convey the Minimal Corresponding Source under the terms of this
+       License, and the Corresponding Application Code in a form
+       suitable for, and under terms that permit, the user to
+       recombine or relink the Application with a modified version of
+       the Linked Version to produce a modified Combined Work, in the
+       manner specified by section 6 of the GNU GPL for conveying
+       Corresponding Source.
+
+       1) Use a suitable shared library mechanism for linking with the
+       Library.  A suitable mechanism is one that (a) uses at run time
+       a copy of the Library already present on the user's computer
+       system, and (b) will operate properly with a modified version
+       of the Library that is interface-compatible with the Linked
+       Version.
+
+   e) Provide Installation Information, but only if you would otherwise
+   be required to provide such information under section 6 of the
+   GNU GPL, and only to the extent that such information is
+   necessary to install and execute a modified version of the
+   Combined Work produced by recombining or relinking the
+   Application with a modified version of the Linked Version. (If
+   you use option 4d0, the Installation Information must accompany
+   the Minimal Corresponding Source and Corresponding Application
+   Code. If you use option 4d1, you must provide the Installation
+   Information in the manner specified by section 6 of the GNU GPL
+   for conveying Corresponding Source.)
+
+  5. Combined Libraries.
+
+  You may place library facilities that are a work based on the
+Library side by side in a single library together with other library
+facilities that are not Applications and are not covered by this
+License, and convey such a combined library under terms of your
+choice, if you do both of the following:
+
+   a) Accompany the combined library with a copy of the same work based
+   on the Library, uncombined with any other library facilities,
+   conveyed under the terms of this License.
+
+   b) Give prominent notice with the combined library that part of it
+   is a work based on the Library, and explaining where to find the
+   accompanying uncombined form of the same work.
+
+  6. Revised Versions of the GNU Lesser General Public License.
+
+  The Free Software Foundation may publish revised and/or new versions
+of the GNU Lesser General Public License from time to time. Such new
+versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns.
+
+  Each version is given a distinguishing version number. If the
+Library as you received it specifies that a certain numbered version
+of the GNU Lesser General Public License "or any later version"
+applies to it, you have the option of following the terms and
+conditions either of that published version or of any later version
+published by the Free Software Foundation. If the Library as you
+received it does not specify a version number of the GNU Lesser
+General Public License, you may choose any version of the GNU Lesser
+General Public License ever published by the Free Software Foundation.
+
+  If the Library as you received it specifies that a proxy can decide
+whether future versions of the GNU Lesser General Public License shall
+apply, that proxy's public statement of acceptance of any version is
+permanent authorization for you to choose that version for the
+Library.
+*/
+package github.christechs.pithelper.gui.essentials
+
+import gg.essential.elementa.UIComponent
+import gg.essential.elementa.components.UIBlock
+import gg.essential.elementa.components.UIContainer
+import gg.essential.elementa.components.UIText
+import gg.essential.elementa.components.Window
+import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
+import gg.essential.elementa.constraints.ChildBasedSizeConstraint
+import gg.essential.elementa.constraints.SiblingConstraint
+import gg.essential.elementa.dsl.*
+import gg.essential.elementa.effects.OutlineEffect
+import gg.essential.elementa.state.BasicState
+import gg.essential.elementa.state.State
+import gg.essential.elementa.state.toConstraint
+import gg.essential.elementa.utils.ObservableClearEvent
+import gg.essential.elementa.utils.ObservableRemoveEvent
+import gg.essential.elementa.utils.roundToRealPixels
+import gg.essential.universal.UMatrixStack
+import gg.essential.vigilance.gui.VigilancePalette
+import java.awt.Color
+import java.util.*
+
+abstract class Tooltip(private val logicalParent: UIComponent) : UIComponent() {
+
+    var textColorState = BasicState(Color.WHITE)
+    var textShadowState = BasicState(true)
+
+    init {
+        constrain {
+            width = ChildBasedMaxSizeConstraint() + 8.pixels
+            height = ChildBasedSizeConstraint() + 8.pixels
+        }
+    }
+
+    val content by UIContainer().constrain {
+        x = CenterConstraint()
+        y = CenterConstraint()
+        width = ChildBasedMaxSizeConstraint()
+        height = ChildBasedSizeConstraint()
+    } childOf this
+
+    private var removalListeners = mutableListOf<() -> Unit>()
+
+    fun bindVisibility(visible: State<Boolean>): Tooltip {
+        visible.onSetValueAndNow {
+            if (it) {
+                showTooltip()
+            } else {
+                hideTooltip()
+            }
+        }
+        return this
+    }
+
+    fun clearLines() {
+        content.clearChildren()
+    }
+
+    fun addLine(text: String = "", configure: UIText.() -> Unit = {}) = apply {
+        val component = UIText(text).bindShadow(textShadowState).constrain {
+            y = SiblingConstraint(padding = 3f)
+            color = textColorState.toConstraint()
+        } childOf content
+        component.configure()
+    }
+
+    fun bindLine(state: State<String>, configure: UIText.() -> Unit = {}): Tooltip {
+        state.onSetValueAndNow {
+            clearLines()
+            addLine(it, configure)
+        }
+        return this
+    }
+
+    fun showTooltip(delayed: Boolean = true) {
+        if (delayed) {
+            return Window.enqueueRenderOperation { showTooltip(delayed = false) }
+        }
+
+        val window = Window.of(logicalParent)
+        if (this in window.children) {
+            return
+        }
+
+        window.addChild(this)
+        setFloating(true)
+
+        fun UIComponent.onRemoved(listener: () -> Unit) {
+            if (parent == this) {
+                return
+            }
+
+            val observer = Observer { _, event ->
+                if (event is ObservableClearEvent<*> || event is ObservableRemoveEvent<*> && event.element.value == this) {
+                    listener()
+                }
+            }
+            parent.children.addObserver(observer)
+            removalListeners.add { parent.children.deleteObserver(observer) }
+
+            parent.onRemoved(listener)
+        }
+        logicalParent.onRemoved {
+            hideTooltip(delayed = false)
+        }
+    }
+
+    fun hideTooltip(delayed: Boolean = true) {
+        if (delayed) {
+            return Window.enqueueRenderOperation { hideTooltip(delayed = false) }
+        }
+
+        val window = Window.ofOrNull(this) ?: return
+
+        setFloating(false)
+        window.removeChild(this)
+
+        removalListeners.forEach { it() }
+        removalListeners.clear()
+    }
+
+}
+
+class EssentialTooltip(
+    private val logicalParent: UIComponent,
+    private val belowComponent: Boolean,
+    private val notchSize: Int = 3,
+    private val notchBoundToParent: Boolean = false,
+) :
+    Tooltip(logicalParent) {
+
+    init {
+        textColorState.set(VigilancePalette.getText())
+
+        this effect OutlineEffect(VigilancePalette.getComponentBorderDark(), 1f)
+
+        constrain {
+            width = ChildBasedMaxSizeConstraint() + 6.pixels
+            height = ChildBasedSizeConstraint() + 4.pixels
+        }
+    }
+
+    override fun draw(matrixStack: UMatrixStack) {
+        super.beforeDraw(matrixStack)
+
+        UIBlock.drawBlock(
+            matrixStack,
+            VigilancePalette.getComponentBackground(),
+            getLeft().toDouble(),
+            getTop().toDouble(),
+            getRight().toDouble(),
+            getBottom().toDouble(),
+        )
+
+        super.draw(matrixStack)
+
+        val center = if (notchBoundToParent) {
+            (logicalParent.getLeft() + logicalParent.getRight()) / 2.0
+        } else {
+            (content.getLeft() + content.getRight()) / 2.0
+        }.roundToRealPixels()
+
+        if (belowComponent) {
+
+            val top = (getTop().toDouble() + 1)
+            for (i in 1..notchSize) {
+                UIBlock.drawBlock(
+                    matrixStack,
+                    VigilancePalette.getComponentBorderDark(),
+                    center - (notchSize - i) - 0.5,
+                    top - 2 - i,
+                    center + (notchSize - i) + 0.5,
+                    top - i - 1
+                )
+            }
+
+            for (i in 1..notchSize) {
+                UIBlock.drawBlock(
+                    matrixStack,
+                    VigilancePalette.getComponentBackground(),
+                    center - (notchSize - i) - 0.5,
+                    top - 1 - i,
+                    center + (notchSize - i) + 0.5,
+                    top - i
+                )
+            }
+        } else {
+            val bottom = (getBottom().toDouble() - 1)
+            for (i in 1..notchSize) {
+                UIBlock.drawBlock(
+                    matrixStack,
+                    VigilancePalette.getComponentBorderDark(),
+                    center - (notchSize - i) - 0.5,
+                    bottom + i,
+                    center + (notchSize - i) + 0.5,
+                    bottom + i + 2
+                )
+            }
+
+            for (i in 1..notchSize) {
+                UIBlock.drawBlock(
+                    matrixStack,
+                    VigilancePalette.getComponentBackground(),
+                    center - (notchSize - i) - 0.5,
+                    bottom + i,
+                    center + (notchSize - i) + 0.5,
+                    bottom + i + 1
+                )
+            }
+        }
+    }
+}

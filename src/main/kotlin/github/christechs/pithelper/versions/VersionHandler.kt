@@ -6,6 +6,8 @@ import gg.essential.vigilance.data.fullPropertyPath
 import gg.essential.vigilance.impl.nightconfig.core.file.FileConfig
 import github.christechs.pithelper.Constants
 import github.christechs.pithelper.config.PitHelperConfig
+import github.christechs.pithelper.versions.previous.ConfigV0d0d1
+import github.christechs.pithelper.versions.previous.ConfigV0d0d2
 import net.minecraft.launchwrapper.Launch
 import java.awt.Color
 
@@ -20,11 +22,13 @@ object VersionHandler {
             PitHelperInfo.info.version = Constants.version
         }
 
-        when(PitHelperInfo.info.version) {
+        when (PitHelperInfo.info.version) {
 
             Constants.version -> PitHelperConfig.initialize()
 
             "unknown" -> update0d0d1()
+
+            "0.0.2" -> update0d0d2()
 
         }
 
@@ -56,6 +60,28 @@ object VersionHandler {
 
     }
 
+    private fun update0d0d2() {
+
+        val oldConfig = ConfigV0d0d2()
+
+        val valid = testData(oldConfig)
+
+        resetFiles()
+        PitHelperConfig.initialize()
+
+        if (valid) {
+            PitHelperConfig.enabled = oldConfig.enabled
+            PitHelperConfig.hypixelOnly = oldConfig.hypixelOnly
+            PitHelperConfig.quickMaths = oldConfig.quickMaths
+            PitHelperConfig.eventsNotifications = oldConfig.eventsNotifications
+            PitHelperConfig.quickMathsClipboard = oldConfig.quickMathsClipboard
+            PitHelperConfig.quickMathsAutoAnswer = oldConfig.quickMathsAutoAnswer
+            PitHelperConfig.majorEventsNotifications = oldConfig.majorEventsNotifications
+            PitHelperConfig.minorEventsNotifications = oldConfig.minorEventsNotifications
+        }
+
+    }
+
     private val propertyCollector = PitHelperPropertyCollector()
 
     private val fileConfig = FileConfig.of(configFile)
@@ -67,7 +93,8 @@ object VersionHandler {
             try {
                 propertyCollector.clear()
                 propertyCollector.initialize(vigilant)
-            }catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
 
             propertyCollector.getProperties().filter { it.value.writeDataToFile }.forEach {
                 val fullPath = it.attributesExt.fullPropertyPath()
@@ -88,7 +115,7 @@ object VersionHandler {
 
             return true
 
-        }catch (_: Exception) {
+        } catch (_: Exception) {
             return false
         }
 

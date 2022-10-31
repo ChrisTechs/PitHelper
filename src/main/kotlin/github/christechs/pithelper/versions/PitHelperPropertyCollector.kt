@@ -6,7 +6,7 @@ import gg.essential.vigilance.data.PropertyCollector
 import gg.essential.vigilance.data.PropertyData
 import gg.essential.vigilance.data.PropertyType
 
-class PitHelperPropertyCollector: PropertyCollector() {
+class PitHelperPropertyCollector : PropertyCollector() {
 
     fun clear() {
         getProperties().clear()
@@ -20,9 +20,11 @@ class PitHelperPropertyCollector: PropertyCollector() {
 
                 PropertyData.fromField(field.getAnnotation(Property::class.java), field, instance).also { data ->
                     if (!data.attributesExt.type.isFieldValid(field)) {
-                        throw IllegalStateException("[Vigilance] Error while creating GUI ${instance::class.simpleName}: " +
-                                "field ${field.name} of PropertyType ${data.attributesExt.type.name} has invalid JVM type " +
-                                field.type.simpleName)
+                        throw IllegalStateException(
+                            "[Vigilance] Error while creating GUI ${instance::class.simpleName}: " +
+                                    "field ${field.name} of PropertyType ${data.attributesExt.type.name} has invalid JVM type " +
+                                    field.type.simpleName
+                        )
                     }
                 }
             }
@@ -34,9 +36,11 @@ class PitHelperPropertyCollector: PropertyCollector() {
 
                 PropertyData.fromMethod(method.getAnnotation(Property::class.java), method, instance).also { data ->
                     if (data.attributesExt.type != PropertyType.BUTTON) {
-                        throw IllegalStateException("[Vigilance] Error while creating GUI ${instance::class.simpleName}: " +
-                                "expected method ${method.name} to have PropertyType BUTTON, but found PropertyType " +
-                                data.attributesExt.type.name)
+                        throw IllegalStateException(
+                            "[Vigilance] Error while creating GUI ${instance::class.simpleName}: " +
+                                    "expected method ${method.name} to have PropertyType BUTTON, but found PropertyType " +
+                                    data.attributesExt.type.name
+                        )
                     }
                 }
             }

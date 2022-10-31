@@ -1,9 +1,10 @@
 package github.christechs.pithelper.features.events
 
 import gg.essential.api.EssentialAPI
-import github.christechs.pithelper.utils.Tasks
+import gg.essential.universal.ChatColor
 import github.christechs.pithelper.config.PitHelperConfig
 import github.christechs.pithelper.gui.EventsGui
+import github.christechs.pithelper.utils.Tasks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -71,10 +72,12 @@ object EventsHandler {
                     val type = eventData["type"]?.jsonPrimitive?.content
                         ?: return@mapFilterToMutableList Optional.empty()
 
+                    val eventInfo = Events.fromEventName(e)
+
                     val event = Event(
                         date = sdf.format(Date(timestamp)),
-                        timestamp = timestamp,
-                        event = Events.fromEventName(e),
+                        event = eventInfo,
+                        timestamp = timestamp + eventInfo.addedTime - 300000,
                         type = EventTypes.fromEventTypeName(type),
                     )
 
@@ -115,6 +118,9 @@ object EventsHandler {
                     var countdown = mainEvent!!.event.duration - (currentTime - mainEvent!!.timestamp)
 
                     if (countdown < 0) {
+
+                        Tasks.runTask { EventsGui.refreshEvents(events) }
+
                         mainEvent = null
                     } else {
 
@@ -127,11 +133,17 @@ object EventsHandler {
                                 "${seconds}s"
                             } else "${minutes}m${seconds}s"
 
-                        EventsGui.activeEventText.setText("$countdownText left of ${mainEvent!!.event.eventName}")
+                        EventsGui.setText(
+                            mainEvent!!.id,
+                            "${ChatColor.GOLD} ${ChatColor.BOLD}Event Active${ChatColor.RESET}: $countdownText"
+                        )
                     }
-                } else EventsGui.activeEventText.setText("No Active Event")
+
+                }
 
                 for (e in events) {
+
+                    if (mainEvent != null && mainEvent!!.id == e.id) continue
 
                     currentTime = System.currentTimeMillis()
 
@@ -139,7 +151,7 @@ object EventsHandler {
                         if (PitHelperConfig.eventsNotifications)
                             EssentialAPI.getNotifications().push(e.event.eventName, "Has started")
                         mainEvent = e
-                        EventsGui.removeEvent(e.id)
+
                         eventsToRemove.add(e)
                         continue
                     }
@@ -163,8 +175,10 @@ object EventsHandler {
 
                     EventsGui.setText(
                         e.id,
-                        "$countdownText until ${e.event.eventName} " +
-                                "${e.type.eventTypeName} event on ${e.date}"
+                        """
+                        Event Time: ${e.date}
+                        Event starts in: $countdownText
+                        """.trimIndent()
                     )
 
                     if (PitHelperConfig.hypixelOnly && !EssentialAPI.getMinecraftUtil().isHypixel()) continue
@@ -198,8 +212,10 @@ object EventsHandler {
 
                 }
 
-                events.removeAll(eventsToRemove)
-                eventsToRemove.clear()
+                if (eventsToRemove.isNotEmpty()) {
+                    events.removeAll(eventsToRemove)
+                    eventsToRemove.clear()
+                }
 
             }, 0L, 1L, TimeUnit.SECONDS)
 

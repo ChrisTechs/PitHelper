@@ -2,11 +2,10 @@ package github.christechs.pithelper
 
 import gg.essential.api.EssentialAPI
 import github.christechs.pithelper.commands.PitHelperCommands
+import github.christechs.pithelper.features.quickmaths.ChatListener
+import github.christechs.pithelper.utils.Tasks
 import github.christechs.pithelper.versions.PitHelperInfo
 import github.christechs.pithelper.versions.VersionHandler
-import github.christechs.pithelper.features.quickmaths.ChatListener
-import github.christechs.pithelper.gui.EventsGui
-import github.christechs.pithelper.utils.Tasks
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -48,7 +47,6 @@ class PitHelper {
     @Mod.EventHandler
     fun postInitialize(event: FMLPostInitializationEvent) {
         PitHelperCommands.register()
-        EventsGui.refreshEvents(emptyList())
     }
 
 }

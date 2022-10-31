@@ -93,9 +93,11 @@ object ChatListener {
 
             for (i in 0 until 10) {
                 delay(100)
-                Minecraft.getMinecraft().soundHandler.playSound(PositionedSoundRecord.create(
-                    ResourceLocation("note.harp")
-                ))
+                Minecraft.getMinecraft().soundHandler.playSound(
+                    PositionedSoundRecord.create(
+                        ResourceLocation("note.harp")
+                    )
+                )
             }
 
         })

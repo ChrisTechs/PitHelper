@@ -2,8 +2,8 @@
   {
     "modid": "pithelper",
     "name": "PitHelper",
-    "description": "Helpful Hypixel Pit Utilities",
-    "version": "0.0.2",
+    "description": "Helpful Hypixel Pit Mod",
+    "version": "0.0.3",
     "mcversion": "1.8.9",
     "url": "",
     "updateUrl": "",

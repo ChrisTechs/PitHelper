@@ -1,4 +1,4 @@
-package github.christechs.pithelper.config
+package github.christechs.pithelper.versions.previous
 
 import gg.essential.universal.ChatColor
 import gg.essential.vigilance.Vigilant
@@ -8,7 +8,7 @@ import gg.essential.vigilance.data.PropertyType
 import gg.essential.vigilance.data.SortingBehavior
 import net.minecraft.launchwrapper.Launch
 
-object PitHelperConfig : Vigilant(
+class ConfigV0d0d1 : Vigilant(
 
     Launch.minecraftHome
         .resolve("config/ChrisTechs/PitHelper/config.toml")
@@ -29,51 +29,41 @@ object PitHelperConfig : Vigilant(
     // General
     @Property(
         type = PropertyType.SWITCH,
-        i18nName = "Enabled",
-        name = "pit_helper_enabled",
-        i18nCategory = "General",
-        category = "general",
+        name = "Enabled",
+        category = "General",
         description = "Mod enabled."
     )
     var enabled = true
 
     @Property(
         type = PropertyType.SWITCH,
-        i18nName = "Hypixel Only",
-        name = "hypixel_only_enabled",
-        i18nCategory = "General",
-        category = "general",
+        name = "Hypixel Only",
+        category = "General",
         description = "Mod only enabled on hypixel."
     )
     var hypixelOnly = true
 
     @Property(
         type = PropertyType.SWITCH,
-        i18nName = "Quick Maths Solver",
-        name = "quick_maths_solver_enabled",
-        i18nCategory = "General",
-        category = "general",
+        name = "Quick Math Solver",
+        category = "General",
         description = "Solve Quick Math"
     )
     var quickMaths = true
 
     @Property(
         type = PropertyType.SWITCH,
-        i18nName = "Events Notifications (Can be inaccurate)",
-        name = "event_notifications_enabled",
-        i18nCategory = "General",
-        category = "general",
-        description = "Sends you notifications about upcoming events"
+        name = "Events Notifications (Can be inaccurate)",
+        category = "General",
+        description = "Sends you notifications when events are about to start"
     )
     var eventsNotifications = true
 
     // Quick Maths
     @Property(
         type = PropertyType.SWITCH,
-        i18nName = "Copy To Clipboard",
-        name = "quick_maths_copy_clipboard_enabled",
-        i18nCategory = "Quick Maths",
-        category = "quick_maths",
+        name = "Copy To Clipboard",
+        category = "Quick Maths",
         description = "Copy Quick Math answer to clipboard"
     )
     var quickMathsClipboard = false
@@ -81,34 +71,51 @@ object PitHelperConfig : Vigilant(
     // Quick Maths Auto Answer
     @Property(
         type = PropertyType.SWITCH,
-        i18nName = "Auto Answer (Bannable)",
-        name = "quick_maths_auto_answer_enabled",
-        i18nCategory = "Quick Maths",
-        category = "quick_maths",
-        description = "Automatically sends Quick Math answer to chat at the end of Quick Maths"
+        name = "Enabled (Bannable)",
+        category = "Quick Maths",
+        subcategory = "Auto Answer",
+        description = "Automatically sends Quick Math answers to chat"
     )
     var quickMathsAutoAnswer = false
+
+    @Property(
+        type = PropertyType.DECIMAL_SLIDER,
+        name = "Random Offset Range",
+        category = "Quick Maths",
+        subcategory = "Auto Answer",
+        description = "Max range for random Quick Maths answer delay",
+        minF = 0f,
+        maxF = 5f
+    )
+    var quickMathsAutoAnswerOffset = 5f
+
+    @Property(
+        type = PropertyType.DECIMAL_SLIDER,
+        name = "Answer Delay",
+        category = "Quick Maths",
+        subcategory = "Auto Answer",
+        description = "Quick Maths answer send delay",
+        minF = 0f,
+        maxF = 5f
+    )
+    var quickMathsAutoAnswerDelay = 5f
 
     // Events
     @Property(
         type = PropertyType.SWITCH,
-        i18nName = "Major Events Notifications",
-        name = "major_events_notifications_enabled",
-        i18nCategory = "Events Notifications",
-        category = "events_notifications",
+        name = "Major Events Notifications",
+        category = "Events",
         subcategory = "Notifications",
-        description = "Sends you notifications for upcoming major event"
+        description = "Sends you notifications for major event"
     )
     var majorEventsNotifications = true
 
     @Property(
         type = PropertyType.SWITCH,
-        i18nName = "Minor Events Notifications",
-        name = "minor_events_notifications_enabled",
-        i18nCategory = "Events Notifications",
-        category = "events_notifications",
+        name = "Minor Events Notifications",
+        category = "Events",
         subcategory = "Notifications",
-        description = "Sends you notifications for upcoming minor event"
+        description = "Sends you notifications for minor event"
     )
     var minorEventsNotifications = false
 

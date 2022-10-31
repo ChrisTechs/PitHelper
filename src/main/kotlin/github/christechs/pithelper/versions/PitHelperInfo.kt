@@ -26,7 +26,7 @@ object PitHelperInfo {
 
         info = try {
             json.decodeFromString(infoFile.bufferedReader().readText())
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Info()
         }
 

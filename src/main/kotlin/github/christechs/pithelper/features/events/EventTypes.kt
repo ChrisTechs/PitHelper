@@ -6,6 +6,7 @@ enum class EventTypes(val eventTypeName: String) {
     NONE("none");
 
     companion object {
+
         fun fromEventTypeName(name: String): EventTypes {
 
             for (value in EventTypes.values()) {
@@ -14,6 +15,7 @@ enum class EventTypes(val eventTypeName: String) {
 
             return NONE
         }
+
     }
 
 }
