@@ -33,4 +33,4 @@ Auto quick math solver
 
 -(Bannable) Can auto answer
 
-[License](https://github.com/ChrisTechs/PitHelper/blob/master/LICENSE.md)
+See License in LICENSE.md
