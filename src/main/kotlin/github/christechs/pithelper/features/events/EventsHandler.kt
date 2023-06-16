@@ -41,14 +41,16 @@ object EventsHandler {
                 }
             }
 
-            val request = HttpGet("https://events.mcpqndq.dev")
+            val request = HttpGet("https://brookeafk.com/emergency.js?v=${System.currentTimeMillis()}")
 
             val response = client.execute(request)
 
             val eventsData = response.entity.content
-                .bufferedReader()
-                .readText()
-                .trim()
+                    .bufferedReader()
+                    .readText()
+                    .replace("var emergency_data = ", "")
+                    .replace("; doEverything(1);", "")
+                    .trim()
 
             withContext(Dispatchers.IO) {
                 response.close()
@@ -59,44 +61,44 @@ object EventsHandler {
             var currentTime = System.currentTimeMillis()
 
             val events = Json.decodeFromString(JsonArray.serializer(), eventsData)
-                .mapFilterToMutableList {
+                    .mapFilterToMutableList {
 
-                    val eventData = Json.decodeFromString(JsonObject.serializer(), it.toString())
+                        val eventData = Json.decodeFromString(JsonObject.serializer(), it.toString())
 
-                    val e = eventData["event"]?.jsonPrimitive?.content
-                        ?: return@mapFilterToMutableList Optional.empty()
+                        val e = eventData["event"]?.jsonPrimitive?.content
+                                ?: return@mapFilterToMutableList Optional.empty()
 
-                    val timestamp = (eventData["timestamp"]?.jsonPrimitive?.long
-                        ?: return@mapFilterToMutableList Optional.empty())
+                        val timestamp = (eventData["timestamp"]?.jsonPrimitive?.long
+                                ?: return@mapFilterToMutableList Optional.empty())
 
-                    val type = eventData["type"]?.jsonPrimitive?.content
-                        ?: return@mapFilterToMutableList Optional.empty()
+                        val type = eventData["type"]?.jsonPrimitive?.content
+                                ?: return@mapFilterToMutableList Optional.empty()
 
-                    val eventInfo = Events.fromEventName(e)
+                        val eventInfo = Events.fromEventName(e)
 
-                    val event = Event(
-                        date = sdf.format(Date(timestamp)),
-                        event = eventInfo,
-                        timestamp = timestamp + eventInfo.addedTime - 300000,
-                        type = EventTypes.fromEventTypeName(type),
-                    )
+                        val event = Event(
+                                date = sdf.format(Date(timestamp)),
+                                event = eventInfo,
+                                timestamp = timestamp,
+                                type = EventTypes.fromEventTypeName(type),
+                        )
 
-                    if (timestamp < currentTime) {
+                        if (timestamp < currentTime) {
 
-                        val difference = currentTime - timestamp
+                            val difference = currentTime - timestamp
 
-                        if (difference <= event.event.duration &&
-                            (mainEvent == null || difference < (currentTime - mainEvent!!.timestamp))
-                        ) {
-                            mainEvent = event
+                            if (difference <= event.event.duration &&
+                                    (mainEvent == null || difference < (currentTime - mainEvent!!.timestamp))
+                            ) {
+                                mainEvent = event
+                            }
+
+                            return@mapFilterToMutableList Optional.empty()
                         }
 
-                        return@mapFilterToMutableList Optional.empty()
+                        return@mapFilterToMutableList Optional.of(event)
+
                     }
-
-                    return@mapFilterToMutableList Optional.of(event)
-
-                }
 
             events.sortedWith(compareBy { it.timestamp })
 
@@ -129,13 +131,13 @@ object EventsHandler {
                         val seconds = TimeUnit.MILLISECONDS.toSeconds(countdown)
 
                         val countdownText =
-                            if (minutes <= 0) {
-                                "${seconds}s"
-                            } else "${minutes}m${seconds}s"
+                                if (minutes <= 0) {
+                                    "${seconds}s"
+                                } else "${minutes}m${seconds}s"
 
                         EventsGui.setText(
-                            mainEvent!!.id,
-                            "${ChatColor.GOLD} ${ChatColor.BOLD}Event Active${ChatColor.RESET}: $countdownText"
+                                mainEvent!!.id,
+                                "${ChatColor.GOLD} ${ChatColor.BOLD}Event Active${ChatColor.RESET}: $countdownText"
                         )
                     }
 
@@ -165,17 +167,17 @@ object EventsHandler {
                     val seconds = TimeUnit.MILLISECONDS.toSeconds(countdown)
 
                     val countdownText =
-                        if (minutes <= 0) {
-                            "${seconds}s"
-                        } else if (hours <= 0) {
-                            "${minutes}m${seconds}s"
-                        } else {
-                            "${hours}h${minutes}m"
-                        }
+                            if (minutes <= 0) {
+                                "${seconds}s"
+                            } else if (hours <= 0) {
+                                "${minutes}m${seconds}s"
+                            } else {
+                                "${hours}h${minutes}m"
+                            }
 
                     EventsGui.setText(
-                        e.id,
-                        """
+                            e.id,
+                            """
                         Event Time: ${e.date}
                         Event starts in: $countdownText
                         """.trimIndent()
@@ -197,13 +199,13 @@ object EventsHandler {
                         notificationToRemove.add(notification)
 
                         val notificationText =
-                            if (hours >= 1) {
-                                "${e.type.name} event in ${hours}h${minutes}m"
-                            } else if (minutes >= 1) {
-                                "${e.type.name} event in ${minutes}m${seconds}"
-                            } else {
-                                "${e.type.name} event in ${seconds}s"
-                            }
+                                if (hours >= 1) {
+                                    "${e.type.name} event in ${hours}h${minutes}m"
+                                } else if (minutes >= 1) {
+                                    "${e.type.name} event in ${minutes}m${seconds}"
+                                } else {
+                                    "${e.type.name} event in ${seconds}s"
+                                }
 
                         EssentialAPI.getNotifications().push(e.event.eventName, notificationText, 2.5f)
                     }
