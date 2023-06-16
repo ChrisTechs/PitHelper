@@ -1,20 +1,27 @@
 pluginManagement {
     repositories {
-
-        mavenLocal()
         gradlePluginPortal()
         mavenCentral()
-
-        maven("https://maven.unifycraft.xyz/releases")
         maven("https://maven.fabricmc.net")
         maven("https://maven.architectury.dev/")
         maven("https://maven.minecraftforge.net")
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://repo.essential.gg/repository/maven-public")
-
-        maven("https://jitpack.io/")
-
+    }
+    plugins {
+        val egtVersion = "0.1.20"
+        id("gg.essential.multi-version.root") version egtVersion
     }
 }
 
-rootProject.name = "PitHelper"
+rootProject.buildFileName = "root.gradle.kts"
+
+listOf(
+        "1.8.9"
+).forEach { version ->
+    include(":$version")
+    project(":$version").apply {
+        projectDir = file("versions/$version")
+        buildFileName = "../../build.gradle.kts"
+    }
+
+}

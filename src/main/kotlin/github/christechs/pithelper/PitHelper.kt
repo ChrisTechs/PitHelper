@@ -2,6 +2,7 @@ package github.christechs.pithelper
 
 import gg.essential.api.EssentialAPI
 import github.christechs.pithelper.commands.PitHelperCommands
+import github.christechs.pithelper.features.events.EventsHandler
 import github.christechs.pithelper.features.quickmaths.ChatListener
 import github.christechs.pithelper.utils.Tasks
 import github.christechs.pithelper.versions.PitHelperInfo
@@ -41,6 +42,8 @@ class PitHelper {
         MinecraftForge.EVENT_BUS.register(ChatListener)
 
         MinecraftForge.EVENT_BUS.register(Tasks)
+
+        EventsHandler.refresh()
 
     }
 
