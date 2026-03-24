@@ -274,9 +274,11 @@ public class LobbyTracker {
             if (existing == null || existing != prestige) {
                 exactPrestiges.put(name, prestige);
 
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
-                        "§8[PitHelper Debug] §7Saved exact prestige for §e" + name + " §7as §d" + prestige
-                ));
+                if (false) {
+                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(
+                            "§8[PitHelper Debug] §7Saved exact prestige for §e" + name + " §7as §d" + prestige
+                    ));
+                }
 
                 scanLobby(Minecraft.getMinecraft(), false);
             }
