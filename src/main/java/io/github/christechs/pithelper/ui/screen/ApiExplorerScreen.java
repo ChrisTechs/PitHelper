@@ -273,15 +273,16 @@ public class ApiExplorerScreen extends ClayScreen {
 
                         for (int i = startIdx; i < endIdx; i++) {
                             LobbyPlayer lp = lobbyPlayers.get(i);
-                            int finalI = i;
+                            int relativeI = i - startIdx;
+
                             el(decl().bg(24, 26, 30, 255).radius(4).layout(layout().sizing(GROW, 0, FIT, 0).padding(10, 10).dir(LEFT_TO_RIGHT).gap(15).align(LEFT, LayoutAlignmentY.CENTER)), () -> {
                                 text("§e" + lp.name, txt().size(1).color(255, 255, 255, 255));
                                 text("Status: " + lp.status, txt().size(1).color(200, 200, 200, 255));
                                 el(decl().layout(layout().sizing(GROW, 0, FIXED, 0)), () -> {
                                 });
-                                ClayComponents.button("Btn_Reload_" + finalI, "Reload", () -> fetchLobbyPlayer(lp));
+                                ClayComponents.button("Btn_Reload_" + relativeI, "Reload", () -> fetchLobbyPlayer(lp));
                                 if (lp.status.equals("§aLoaded")) {
-                                    ClayComponents.button("Btn_View_" + finalI, "View Profile", () -> this.screenToOpen = new CustomProfileViewerScreen(this, lp.name));
+                                    ClayComponents.button("Btn_View_" + relativeI, "View Profile", () -> this.screenToOpen = new CustomProfileViewerScreen(this, lp.name));
                                 }
                             });
                         }

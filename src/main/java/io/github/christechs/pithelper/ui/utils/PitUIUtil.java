@@ -100,7 +100,10 @@ public class PitUIUtil {
                         int idx = startIdx + (finalR * columns) + c;
                         if (idx < endIdx) {
                             ItemStack stack = items[idx];
-                            String slotId = slotIdPrefix + idx;
+
+                            int relativeIdx = (finalR * columns) + c;
+                            String slotId = slotIdPrefix + relativeIdx;
+
                             if (drawItemSlot(slotId, stack) && onHover != null) {
                                 onHover.accept(stack);
                             }
