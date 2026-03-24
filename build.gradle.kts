@@ -141,3 +141,31 @@ tasks.shadowJar {
 
 tasks.assemble.get().dependsOn(tasks.remapJar)
 
+val keyStore = project.findProperty("keyStore") as String? ?: System.getenv("KEYSTORE_PATH")
+val keyStoreAlias = project.findProperty("keyStoreAlias") as String? ?: System.getenv("KEYSTORE_ALIAS")
+val keyStorePass = project.findProperty("keyStorePass") as String? ?: System.getenv("KEYSTORE_PASS")
+
+if (keyStore != null && keyStoreAlias != null && keyStorePass != null) {
+    tasks.register("signJar") {
+        dependsOn(remapJar)
+
+        doLast {
+            val jarFile = remapJar.archiveFile.get().asFile
+
+            ant.withGroovyBuilder {
+                "signjar"(
+                    mapOf(
+                        "jar" to jarFile.absolutePath,
+                        "alias" to keyStoreAlias,
+                        "storepass" to keyStorePass,
+                        "keystore" to keyStore,
+                        "preservelastmodified" to "true"
+                    )
+                )
+            }
+            println("Successfully signed jar: ${jarFile.name}")
+        }
+    }
+
+    tasks.assemble.get().dependsOn("signJar")
+}
