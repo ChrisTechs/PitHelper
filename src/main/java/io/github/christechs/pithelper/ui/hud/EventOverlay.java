@@ -159,9 +159,11 @@ public class EventOverlay {
                 );
 
                 if (notif.event != null) {
+                    long startCountdown = notif.event.timestamp + notif.event.eventType.startOffset;
+
                     drawUnifiedRow(
                             notif.event,
-                            notif.event.timestamp - System.currentTimeMillis(),
+                            startCountdown - System.currentTimeMillis(),
                             false
                     );
                 } else {
