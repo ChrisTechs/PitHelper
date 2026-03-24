@@ -2,15 +2,15 @@
   {
     "modid": "${modid}",
     "name": "PitHelper",
-    "description": "A Hypixel The Pit Helper Mod.",
+    "description": "A QoL utility mod for The Pit. Not affiliated with or endorsed by Hypixel Inc.",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "https://github.com/ChrisTechs/PitHelper",
     "updateUrl": "",
     "authorList": [
-      "Christian"
+      "Christian Steenkamp"
     ],
-    "credits": "",
+    "credits": "Event data provided by BrookeAFK.",
     "logoFile": "",
     "screenshots": [],
     "dependencies": []
