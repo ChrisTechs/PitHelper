@@ -152,22 +152,19 @@ public class LobbyTracker {
     }
 
     private void printLobbyStats(Minecraft mc, double avg, int total, int[] brackets, boolean isUpdate, boolean manual) {
-        String title = isUpdate ? "§b[Lobby] Average Shifted: §e" : "§b[Lobby] Average Prestige: §e";
-        if (manual) title = "§b[Lobby] Current Stats: §e";
+        String prefix = manual ? "§6§lSTATS" : "§b§lLOBBY";
+        String type = isUpdate ? "§fShifted" : "§fPrestige";
 
-        mc.thePlayer.addChatMessage(new ChatComponentText(title + String.format("%.1f", avg) + " §7(" + total + " players)"));
+        mc.thePlayer.addChatMessage(new ChatComponentText("§8§m----------------------------------------"));
+        mc.thePlayer.addChatMessage(new ChatComponentText(prefix + " §8» " + type + ": §e" + String.format("%.2f", avg) + " §7(" + total + " players)"));
 
-        StringBuilder sb = new StringBuilder("§7 ├ ");
-        boolean first = true;
         for (int i = 0; i < brackets.length; i++) {
             if (brackets[i] > 0) {
                 int pct = (int) Math.round((brackets[i] / (double) total) * 100);
-                if (!first) sb.append(" §7| ");
-                sb.append(BRACKET_NAMES[i]).append(": §f").append(pct).append("%");
-                first = false;
+                mc.thePlayer.addChatMessage(new ChatComponentText(" §7• " + BRACKET_NAMES[i] + " §8» §f" + pct + "% §7(" + brackets[i] + ")"));
             }
         }
-        mc.thePlayer.addChatMessage(new ChatComponentText(sb.toString()));
+        mc.thePlayer.addChatMessage(new ChatComponentText("§8§m----------------------------------------"));
     }
 
     private int getBracketIndex(int p) {
