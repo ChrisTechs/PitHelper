@@ -1,36 +1,58 @@
 # PitHelper
 
-# Compile Yourself
+PitHelper is a Minecraft Forge clientside mod designed for the Hypixel Pit. 
 
-I think you may need Java 16 or above for this 
-to compile
+It provides a collection of QoL utilities, event tracking, and custom interfaces related to Hypixel API The Pit data.
 
-This is for linux windows should be similar
+## Features
 
-git clone https://github.com/ChrisTechs/PitHelper
+* **Event Tracking & Overlay:** Uses event data provided by BrookeAFK to track upcoming Pit events and displays them on a HUD overlay.
 
-cd PitHelper/
 
-./gradlew remapJar
+* **Quick Maths Solver:** Beware this feature is use at own risk. Automatically evaluates Quick Maths chat equations. It can be configured to copy the answer to the clipboard or automatically open chat with the solution.
 
-cd build/libs/
 
-# Features
+* **Friend and Enemy Management:** A local system to categorize other players as friends or enemies.
 
-Customize in /pithelper settings
 
-Has upcoming and current event menu
-with /pithelper events
-Or has notifications for major and minor events
+* **Player Highlighting:** Tints friends as green and enemies as red if configured to do so. Tint players with chain and iron armor as pink if configured to do so.
 
-Auto quick math solver
 
--Sends message to you what answer is
+* **Auto Spawn & Death Handling:** QoL features like: Blocks player movement for X seconds after death and keybind toggle auto /spawn which auto enters /spawn as soon as your cooldown expires. Beware auto /spawn is use at own risk as it might be seen as macroing although it is functionally the same as using a keybind to send /spawn combined with a /spawn cooldown countdown.
 
--Sends notification
 
--Can auto copy to clipboard
+* **Lobby Tracking:** Keeps track of the current Hypixel server and lobby states. If configured sends a stats breakdown of the current lobby including prestige average and prestige breakdowns.
 
--(Bannable) Can auto answer
 
-See License in LICENSE.md
+* **API Explorer:** In game UI to view information about players and search for enchants and items in a local database as well as all players in your current lobby.
+
+
+* **Profile Viewer:** View stats and inventories of any player.
+
+## Commands
+
+The following commands are registered by the mod:
+
+* `/pithelper` - Opens the main UI and configuration menu.
+* `/viewinv [player]` - Opens a screen to view the specified player's inventory.
+* `/pitfriend [player]` - Manages the local friend list.
+* `/pitenemy [player]` - Manages the local enemy list.
+* `/apiexplorer` - Opens the API explorer interface.
+
+## Compilation Instructions
+
+If you wish to compile the mod from the source code yourself.
+
+```bash
+./gradlew build
+```
+
+There is also github actions build that does exactly this.
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0 (AGPLv3).
+
+Copyright (c) 2026 Christian Steenkamp
+
+See the LICENSE file in the root of this repository for the full license text.

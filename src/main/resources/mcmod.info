@@ -1,15 +1,16 @@
 [
   {
-    "modid": "pithelper",
+    "modid": "${modid}",
     "name": "PitHelper",
-    "description": "Helpful Hypixel Pit Mod",
-    "version": "0.0.3",
-    "mcversion": "1.8.9",
-    "url": "",
+    "description": "A Hypixel The Pit Helper Mod.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/ChrisTechs/PitHelper",
     "updateUrl": "",
     "authorList": [
       "Christian"
     ],
+    "credits": "",
     "logoFile": "",
     "screenshots": [],
     "dependencies": []

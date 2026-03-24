@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.7.11",
+  "package": "io.github.christechs.pithelper.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.pithelper.refmap.json",
+  "mixins": [
+    "MixinLayerArmorBase",
+    "MixinRendererLivingEntity"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
