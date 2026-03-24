@@ -121,15 +121,15 @@ val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
 tasks.jar {
     archiveClassifier.set("without-deps")
     destinationDirectory.set(layout.buildDirectory.dir("intermediates"))
-    from('.') {
-        include("LICENSE")
-    }
 }
 
 tasks.shadowJar {
     destinationDirectory.set(layout.buildDirectory.dir("intermediates"))
     archiveClassifier.set("non-obfuscated-with-deps")
     configurations = listOf(shadowImpl)
+
+    from(rootProject.file("LICENSE"))
+
     doLast {
         configurations.forEach {
             println("Copying dependencies into mod: ${it.files}")
