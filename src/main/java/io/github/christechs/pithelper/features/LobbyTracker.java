@@ -268,7 +268,7 @@ public class LobbyTracker {
             int prestige = (roman != null) ? romanToInt(roman) : 0;
 
             Integer existing = exactPrestiges.get(name);
-            if (prestige != 0 && existing == null || existing != prestige) {
+            if (prestige != 0 && (existing == null || existing != prestige)) {
                 exactPrestiges.put(name, prestige);
 
                 if (false) {
