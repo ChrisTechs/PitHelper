@@ -1,14 +1,21 @@
 name: Run Gradle Build
 on:
-  - push
-  - pull_request
+  push:
+    branches: [ "**" ]
+    tags: [ "v*" ]
+  pull_request:
 
 jobs:
   gradle:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
     steps:
       - name: Checkout source
         uses: actions/checkout@v4.1.1
+        with:
+          fetch-tags: true
 
       - name: Setup Java
         uses: actions/setup-java@v4.0.0
@@ -36,3 +43,22 @@ jobs:
         with:
           name: mod-jar
           path: build/libs/*.jar
+
+      - name: Extract Tag Message
+        id: tag_message
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG_MSG=$(git tag -l --format='%(contents)' ${{ github.ref_name }})
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "message<<$EOF" >> "$GITHUB_OUTPUT"
+          echo "$TAG_MSG" >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body: ${{ steps.tag_message.outputs.message }}
+          files: build/libs/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
