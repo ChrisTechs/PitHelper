@@ -20,6 +20,7 @@ package io.github.christechs.pithelper.commands;
 
 import io.github.christechs.pithelper.features.NotificationHandler;
 import io.github.christechs.pithelper.ui.screen.ApiExplorerScreen;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
