@@ -23,21 +23,13 @@ It provides a collection of QoL utilities, event tracking, and custom interfaces
 
 * **Lobby Tracking:** Keeps track of the current Hypixel server and lobby states. If configured sends a stats breakdown of the current lobby including prestige average and prestige breakdowns.
 
-
-* **API Explorer:** In game UI to view information about players and search for enchants and items in a local database as well as all players in your current lobby.
-
-
-* **Profile Viewer:** View stats and inventories of any player.
-
 ## Commands
 
 The following commands are registered by the mod:
 
 * `/pithelper` - Opens the main UI and configuration menu.
-* `/viewinv [player]` - Opens a screen to view the specified player's inventory.
 * `/pitfriend [player]` - Manages the local friend list.
 * `/pitenemy [player]` - Manages the local enemy list.
-* `/apiexplorer` - Opens the API explorer interface.
 
 ## Compilation Instructions
 
