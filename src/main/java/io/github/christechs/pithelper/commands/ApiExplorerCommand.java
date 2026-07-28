@@ -48,6 +48,7 @@ public class ApiExplorerCommand extends CommandBase {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        NotificationHandler.pendingScreen = new ApiExplorerScreen(null);
+        sender.addChatMessage(new ChatComponentText("§cFeature not supported."));
+        //NotificationHandler.pendingScreen = new ApiExplorerScreen(null);
     }
 }

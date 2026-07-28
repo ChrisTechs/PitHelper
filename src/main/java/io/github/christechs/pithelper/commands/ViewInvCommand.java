@@ -49,11 +49,12 @@ public class ViewInvCommand extends CommandBase {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        if (args.length == 0) {
+        sender.addChatMessage(new ChatComponentText("§cFeature not supported."));
+        /*if (args.length == 0) {
             sender.addChatMessage(new ChatComponentText("§cUsage: /viewinv <player>"));
             return;
         }
 
-        NotificationHandler.pendingScreen = new CustomProfileViewerScreen(null, args[0]);
+        NotificationHandler.pendingScreen = new CustomProfileViewerScreen(null, args[0]);*/
     }
 }
