@@ -55,7 +55,7 @@ public class PitHelperMenu extends AutoConfigScreen {
         super("PitHelper");
         loadConfigCategories();
         addTab(new LiveEventsTab(this));
-        addTab(new ApiTab(this));
+        //addTab(new ApiTab(this));
         addTab(new SocialTab(this));
         addTab(new DevToolsTab());
     }
