@@ -58,6 +58,4 @@ See the LICENSE file in the root of this repository for the full license text.
 
 **PitHelper is a third party mod and is NOT affiliated with, endorsed by, or associated with Hypixel Inc.**
 
-This mod utilizes the Hypixel Public API through a private backend service. All data is fetched and cached according to the Hypixel Developer Policies. Usage of certain features (like the Quick Maths Solver or Auto Spawn) is at the user's own risk; players should remain aware of Hypixel's rules regarding macros and fair play.
-
 The `clayj` UI library included in this project's source code is licensed separately under the zlib/libpng and BSD 3-Clause licenses.
