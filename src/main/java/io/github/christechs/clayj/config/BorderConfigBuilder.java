@@ -1,135 +1,115 @@
 /*
- * ClayJ is licensed under the zlib/libpng license.
- * Copyright (c) 2026 Christian Steenkamp
+ * Original Clay Library Copyright (c) 2024 Nic Barker
+ * Licensed under the zlib/libpng license.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from the
- * use of this software.
+ * See the LICENSE.md file in the root of this repository for the
+ * full zlib/libpng license text.
  *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- * claim that you wrote the original software. If you use this software in a
- * product, an acknowledgment in the product documentation would be
- * appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not
- * be misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
+ * Note: This source file has been altered from the original Clay
+ * distribution. The modifications are released into the public domain.
  */
-
 package io.github.christechs.clayj.config;
 
 import io.github.christechs.clayj.math.BorderWidth;
 import io.github.christechs.clayj.math.Color;
 
 public final class BorderConfigBuilder implements ConfigBuilder {
-    public Color color = new Color(255, 255, 255, 255);
-    public BorderWidth width = new BorderWidth();
+    public Color color = new Color(255f, 255f, 255f, 255f);
+    public BorderWidth width = new BorderWidth(0, 0, 0, 0, 0);
 
-    public void set(BorderConfigBuilder other) {
-        this.color.set(other.color.r, other.color.g, other.color.b, other.color.a);
-        this.width.set(
-                other.width.left,
-                other.width.right,
-                other.width.top,
-                other.width.bottom,
-                other.width.betweenChildren);
+    public BorderConfigBuilder set(BorderConfigBuilder other) {
+        this.color = other.color;
+        this.width = other.width;
+        return this;
     }
 
     public BorderConfigBuilder color(Color color) {
-        this.color.set(color.r, color.g, color.b, color.a);
+        this.color = color;
         return this;
     }
 
     public BorderConfigBuilder color(float rgb) {
-        this.color.set(rgb, rgb, rgb, this.color.a);
+        this.color = new Color(rgb, rgb, rgb, this.color.a());
         return this;
     }
 
     public BorderConfigBuilder color(float r, float g, float b) {
-        this.color.set(r, g, b, this.color.a);
+        this.color = new Color(r, g, b, this.color.a());
         return this;
     }
 
     public BorderConfigBuilder color(float r, float g, float b, float a) {
-        this.color.set(r, g, b, a);
+        this.color = new Color(r, g, b, a);
         return this;
     }
 
     public BorderConfigBuilder r(float r) {
-        this.color.r = r;
+        this.color = new Color(r, this.color.g(), this.color.b(), this.color.a());
         return this;
     }
 
     public BorderConfigBuilder g(float g) {
-        this.color.g = g;
+        this.color = new Color(this.color.r(), g, this.color.b(), this.color.a());
         return this;
     }
 
     public BorderConfigBuilder b(float b) {
-        this.color.b = b;
+        this.color = new Color(this.color.r(), this.color.g(), b, this.color.a());
         return this;
     }
 
     public BorderConfigBuilder a(float a) {
-        this.color.a = a;
+        this.color = new Color(this.color.r(), this.color.g(), this.color.b(), a);
         return this;
     }
 
     public BorderConfigBuilder width(int all) {
-        this.width.left = all;
-        this.width.right = all;
-        this.width.top = all;
-        this.width.bottom = all;
+        this.width = new BorderWidth(all, all, all, all, this.width.betweenChildren());
+        return this;
+    }
+
+    public BorderConfigBuilder width(int x, int y) {
+        this.width = new BorderWidth(x, x, y, y, this.width.betweenChildren());
         return this;
     }
 
     public BorderConfigBuilder width(int left, int right, int top, int bottom) {
-        this.width.left = left;
-        this.width.right = right;
-        this.width.top = top;
-        this.width.bottom = bottom;
+        this.width = new BorderWidth(left, right, top, bottom, this.width.betweenChildren());
         return this;
     }
 
     public BorderConfigBuilder width(int left, int right, int top, int bottom, int betweenChildren) {
-        this.width.left = left;
-        this.width.right = right;
-        this.width.top = top;
-        this.width.bottom = bottom;
-        this.width.betweenChildren = betweenChildren;
+        this.width = new BorderWidth(left, right, top, bottom, betweenChildren);
         return this;
     }
 
     public BorderConfigBuilder left(int left) {
-        this.width.left = left;
+        this.width = new BorderWidth(left, this.width.right(), this.width.top(), this.width.bottom(), this.width.betweenChildren());
         return this;
     }
 
     public BorderConfigBuilder right(int right) {
-        this.width.right = right;
+        this.width = new BorderWidth(this.width.left(), right, this.width.top(), this.width.bottom(), this.width.betweenChildren());
         return this;
     }
 
     public BorderConfigBuilder top(int top) {
-        this.width.top = top;
+        this.width = new BorderWidth(this.width.left(), this.width.right(), top, this.width.bottom(), this.width.betweenChildren());
         return this;
     }
 
     public BorderConfigBuilder bottom(int bottom) {
-        this.width.bottom = bottom;
+        this.width = new BorderWidth(this.width.left(), this.width.right(), this.width.top(), bottom, this.width.betweenChildren());
         return this;
     }
 
     public BorderConfigBuilder betweenChildren(int betweenChildren) {
-        this.width.betweenChildren = betweenChildren;
+        this.width = new BorderWidth(this.width.left(), this.width.right(), this.width.top(), this.width.bottom(), betweenChildren);
         return this;
     }
 
     public void reset() {
-        this.color.set(255, 255, 255, 255);
-        this.width.set(0, 0, 0, 0, 0);
+        this.color = new Color(255f, 255f, 255f, 255f);
+        this.width = new BorderWidth(0, 0, 0, 0, 0);
     }
 }

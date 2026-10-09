@@ -1,43 +1,59 @@
 /*
- * ClayJ is licensed under the zlib/libpng license.
- * Copyright (c) 2026 Christian Steenkamp
+ * This is free and unencumbered software released into the public domain.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from the
- * use of this software.
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- * claim that you wrote the original software. If you use this software in a
- * product, an acknowledgment in the product documentation would be
- * appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not
- * be misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
+ * See the LICENSE.md file for more information, or visit <https://unlicense.org/>
  */
-
 package io.github.christechs.clayj.math;
 
 public class Vector2 {
-    public float x;
-    public float y;
 
-    public Vector2() {
-    }
+    public float x, y;
+
 
     public Vector2(float x, float y) {
-        set(x, y);
-    }
-
-    public void set(Vector2 other) {
-        set(other.x, other.y);
-    }
-
-    public void set(float x, float y) {
         this.x = x;
         this.y = y;
+    }
+
+    public float x() {
+        return x;
+    }
+
+    public float y() {
+        return y;
+    }
+
+    public Vector2 set(Vector2 other) {
+        return new Vector2(other.x(), other.y());
+    }
+
+    public Vector2 set(float x, float y) {
+        return new Vector2(x, y);
+    }
+
+    public Vector2 add(float x, float y) {
+        return new Vector2(this.x + x, this.y + y);
+    }
+
+    public Vector2 add(Vector2 other) {
+        return add(other.x(), other.y());
+    }
+
+    public Vector2 sub(float x, float y) {
+        return new Vector2(this.x - x, this.y - y);
+    }
+
+    public Vector2 sub(Vector2 other) {
+        return sub(other.x(), other.y());
+    }
+
+    public Vector2 scale(float scalar) {
+        return new Vector2(this.x * scalar, this.y * scalar);
+    }
+
+    public float distanceTo(Vector2 other) {
+        float dx = this.x - other.x();
+        float dy = this.y - other.y();
+        return (float) Math.sqrt(dx * dx + dy * dy);
     }
 }

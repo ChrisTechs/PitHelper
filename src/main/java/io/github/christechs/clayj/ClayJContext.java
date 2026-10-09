@@ -1,88 +1,88 @@
 /*
- * ClayJ is licensed under the zlib/libpng license.
- * Copyright (c) 2026 Christian Steenkamp
+ * This is free and unencumbered software released into the public domain.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from the
- * use of this software.
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- * claim that you wrote the original software. If you use this software in a
- * product, an acknowledgment in the product documentation would be
- * appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not
- * be misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
+ * See the LICENSE.md file for more information, or visit <https://unlicense.org/>
  */
 
 package io.github.christechs.clayj;
 
 import io.github.christechs.clayj.config.*;
+import io.github.christechs.clayj.core.*;
 import io.github.christechs.clayj.core.ClayJFunctions.ErrorHandler;
 import io.github.christechs.clayj.core.ClayJFunctions.MeasureTextFunction;
 import io.github.christechs.clayj.core.ClayJFunctions.QueryScrollOffsetFunction;
-import io.github.christechs.clayj.core.*;
 import io.github.christechs.clayj.enums.ClayJError;
 import io.github.christechs.clayj.math.Dimensions;
 import io.github.christechs.clayj.math.Vector2;
-import io.github.christechs.clayj.util.ArenaPool;
 
 import java.util.Arrays;
 
 public final class ClayJContext {
 
     public static final int MAX_SCROLL_CONTAINERS = 32;
-    public final int maxElementCount;
-    public final int maxMeasureTextCacheWordCount;
+    private static final int DEFAULT_INITIAL_CAPACITY = 8192;
+    private static final int DEFAULT_MEASURE_CAPACITY = 8192;
 
-    public final Vector2 scratchVector = new Vector2();
-    public final Dimensions scratchDimensions = new Dimensions();
-
+    public final boolean fixedCapacity;
     public final MousePointerData pointerInfo = new MousePointerData();
-    public final Dimensions layoutDimensions = new Dimensions();
-    public final LayoutElement[] layoutElements;
-    public final RenderCommand[] renderCommands;
-    public final int[] openLayoutElementStack;
-    public final int[] layoutElementChildrenBuffer;
-    public final int[] layoutElementChildren;
-    public final int[] openClipElementStack;
-    public final int[] layoutElementClipElementIds;
-    public final LayoutConfigBuilder[] layoutConfigs;
-    public final SharedConfigBuilder[] sharedElementConfigs;
-    public final BorderConfigBuilder[] borderElementConfigs;
-    public final FloatingConfigBuilder[] floatingElementConfigs;
-    public final ScrollConfigBuilder[] scrollElementConfigs;
-    public final ImageConfigBuilder[] imageElementConfigs;
-    public final TextConfigBuilder[] textElementConfigs;
-    public final CustomConfigBuilder[] customElementConfigs;
-    public final LayoutElementHashMapItem[] layoutElementHashMapItemPool;
-    public final int[] layoutElementsHashBuckets;
-    public final LayoutElementTreeRoot[] layoutElementTreeRoots;
-    public final MeasureTextCacheItem[] measureTextHashMapInternal;
-    public final int[] measureTextHashMapInternalFreeList;
-    public final int[] measureTextHashMap;
-    public final MeasuredWord[] measuredWords;
-    public final int[] measuredWordsFreeList;
-    public final TextElementData[] textElementData;
-    public final WrappedTextLine[] wrappedTextLines;
-    public final int[] imageElementPointers;
-    public final ElementId[] pointerOverIds;
     public final ScrollContainerDataInternal[] scrollContainerDatas;
-    public final LayoutElementTreeNode[] layoutElementTreeNodes;
-    public final boolean[] treeNodeVisited;
-    public final int[] resizableBuffer;
-
-    public final ArenaPool<ElementDeclBuilder> transientDecls;
-    public final ArenaPool<LayoutConfigBuilder> transientLayouts;
-    public final ArenaPool<TextConfigBuilder> transientTexts;
-    public final ArenaPool<CustomConfigBuilder> transientCustoms;
-    public final ArenaPool<ElementId> transientIds;
-
     final ElementDeclBuilder rootDeclBuilder = new ElementDeclBuilder();
+    public int maxElementCount;
+    public int maxMeasureTextCacheWordCount;
+    public Vector2 scratchVector = new Vector2(0f, 0f);
+    public Dimensions scratchDimensions = new Dimensions(0f, 0f);
+    public Dimensions layoutDimensions = new Dimensions(0f, 0f);
+    public LayoutElement[] layoutElements;
+    public RenderCommand[] renderCommands;
+    public int[] openLayoutElementStack;
+    public int[] layoutElementChildrenBuffer;
+    public int[] layoutElementChildren;
+    public int[] openClipElementStack;
+    public int[] layoutElementClipElementIds;
+    public LayoutConfigBuilder[] layoutConfigs;
+    public SharedConfigBuilder[] sharedElementConfigs;
+    public BorderConfigBuilder[] borderElementConfigs;
+    public FloatingConfigBuilder[] floatingElementConfigs;
+    public ScrollConfigBuilder[] scrollElementConfigs;
+    public ImageConfigBuilder[] imageElementConfigs;
+    public TextConfigBuilder[] textElementConfigs;
+    public CustomConfigBuilder[] customElementConfigs;
+    public LayoutElementHashMapItem[] layoutElementHashMapItemPool;
+    public int[] layoutElementsHashBuckets;
+    public LayoutElementTreeRoot[] layoutElementTreeRoots;
+    public MeasureTextCacheItem[] measureTextHashMapInternal;
+    public int[] measureTextHashMapInternalFreeList;
+    public int[] measureTextHashMap;
+    public MeasuredWord[] measuredWords;
+    public int[] measuredWordsFreeList;
+    public TextElementData[] textElementData;
+    public WrappedTextLine[] wrappedTextLines;
+    public int[] imageElementPointers;
+    public ElementId[] pointerOverIds;
+    public LayoutElementTreeNode[] layoutElementTreeNodes;
+    public boolean[] treeNodeVisited;
+    public int[] resizableBuffer;
+    public ElementDeclBuilder[] transientDecls;
+    public LayoutConfigBuilder[] transientLayouts;
+    public TextConfigBuilder[] transientTexts;
+    public CustomConfigBuilder[] transientCustoms;
+    public ElementId[] transientIds;
+    public BorderConfigBuilder[] transientBorders;
+    public ScrollConfigBuilder[] transientScrolls;
+    public FloatingConfigBuilder[] transientFloatings;
+    public ImageConfigBuilder[] transientImages;
+    public SharedConfigBuilder[] transientShareds;
+    public int transientDeclsLength = 0;
+    public int transientLayoutsLength = 0;
+    public int transientTextsLength = 0;
+    public int transientCustomsLength = 0;
+    public int transientIdsLength = 0;
+    public int transientBordersLength = 0;
+    public int transientScrollsLength = 0;
+    public int transientFloatingsLength = 0;
+    public int transientImagesLength = 0;
+    public int transientSharedsLength = 0;
+
     public MeasureTextFunction measureTextFunction;
     public ErrorHandler errorHandler = (errorType) -> System.err.println("ClayJ Error [" + errorType + "]: " + errorType.getDefaultMessage());
     public QueryScrollOffsetFunction queryScrollOffsetFunction;
@@ -122,90 +122,124 @@ public final class ClayJContext {
     public int resizableBufferLength = 0;
 
     public ClayJContext(int maxElementCount, int maxMeasureTextCacheWordCount) {
+        this(maxElementCount, maxMeasureTextCacheWordCount, true);
+    }
+
+    private ClayJContext(int maxElementCount, int maxMeasureTextCacheWordCount, boolean fixedCapacity) {
         this.maxElementCount = maxElementCount;
         this.maxMeasureTextCacheWordCount = maxMeasureTextCacheWordCount;
+        this.fixedCapacity = fixedCapacity;
 
         scrollContainerDatas = new ScrollContainerDataInternal[MAX_SCROLL_CONTAINERS];
-        for (int i = 0; i < scrollContainerDatas.length; i++)
-            scrollContainerDatas[i] = new ScrollContainerDataInternal();
 
         layoutElements = new LayoutElement[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) layoutElements[i] = new LayoutElement();
-
         renderCommands = new RenderCommand[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) renderCommands[i] = new RenderCommand();
 
         openLayoutElementStack = new int[maxElementCount];
         layoutElementChildrenBuffer = new int[maxElementCount];
         layoutElementChildren = new int[maxElementCount];
         openClipElementStack = new int[maxElementCount];
         layoutElementClipElementIds = new int[maxElementCount];
+        resizableBuffer = new int[maxElementCount];
+        treeNodeVisited = new boolean[maxElementCount];
 
         layoutConfigs = new LayoutConfigBuilder[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) layoutConfigs[i] = new LayoutConfigBuilder();
-
         sharedElementConfigs = new SharedConfigBuilder[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) sharedElementConfigs[i] = new SharedConfigBuilder();
-
         borderElementConfigs = new BorderConfigBuilder[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) borderElementConfigs[i] = new BorderConfigBuilder();
-
         floatingElementConfigs = new FloatingConfigBuilder[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) floatingElementConfigs[i] = new FloatingConfigBuilder();
-
         scrollElementConfigs = new ScrollConfigBuilder[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) scrollElementConfigs[i] = new ScrollConfigBuilder();
-
         imageElementConfigs = new ImageConfigBuilder[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) imageElementConfigs[i] = new ImageConfigBuilder();
-
         textElementConfigs = new TextConfigBuilder[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) textElementConfigs[i] = new TextConfigBuilder();
-
         customElementConfigs = new CustomConfigBuilder[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) customElementConfigs[i] = new CustomConfigBuilder();
 
         layoutElementHashMapItemPool = new LayoutElementHashMapItem[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) layoutElementHashMapItemPool[i] = new LayoutElementHashMapItem();
-
         layoutElementsHashBuckets = new int[maxElementCount];
         Arrays.fill(layoutElementsHashBuckets, -1);
 
         layoutElementTreeRoots = new LayoutElementTreeRoot[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) layoutElementTreeRoots[i] = new LayoutElementTreeRoot();
-
         textElementData = new TextElementData[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) textElementData[i] = new TextElementData();
-
         wrappedTextLines = new WrappedTextLine[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) wrappedTextLines[i] = new WrappedTextLine();
+        layoutElementTreeNodes = new LayoutElementTreeNode[maxElementCount];
 
         imageElementPointers = new int[maxElementCount];
         pointerOverIds = new ElementId[maxElementCount];
 
-        layoutElementTreeNodes = new LayoutElementTreeNode[maxElementCount];
-        for (int i = 0; i < maxElementCount; i++) layoutElementTreeNodes[i] = new LayoutElementTreeNode();
-
-        resizableBuffer = new int[maxElementCount];
-        treeNodeVisited = new boolean[maxElementCount];
-
         measureTextHashMapInternal = new MeasureTextCacheItem[maxMeasureTextCacheWordCount];
-        for (int i = 0; i < maxMeasureTextCacheWordCount; i++)
-            measureTextHashMapInternal[i] = new MeasureTextCacheItem();
+        measureTextHashMapInternal[0] = new MeasureTextCacheItem();
         measureTextHashMapInternalFreeList = new int[maxMeasureTextCacheWordCount];
         measureTextHashMap = new int[maxMeasureTextCacheWordCount];
         measuredWords = new MeasuredWord[maxMeasureTextCacheWordCount];
-        for (int i = 0; i < maxMeasureTextCacheWordCount; i++) measuredWords[i] = new MeasuredWord();
         measuredWordsFreeList = new int[maxMeasureTextCacheWordCount];
         measureTextHashMapInternalLength = 1;
 
-        int transientSize = maxElementCount / 2;
+        int transientSize = Math.max(16, maxElementCount / 2);
+        transientDecls = new ElementDeclBuilder[transientSize];
+        transientLayouts = new LayoutConfigBuilder[transientSize];
+        transientTexts = new TextConfigBuilder[transientSize];
+        transientCustoms = new CustomConfigBuilder[transientSize];
+        transientIds = new ElementId[transientSize];
+        transientBorders = new BorderConfigBuilder[transientSize];
+        transientScrolls = new ScrollConfigBuilder[transientSize];
+        transientFloatings = new FloatingConfigBuilder[transientSize];
+        transientImages = new ImageConfigBuilder[transientSize];
+        transientShareds = new SharedConfigBuilder[transientSize];
+    }
 
-        transientDecls = new ArenaPool<>(transientSize, ElementDeclBuilder::new, ElementDeclBuilder::reset);
-        transientLayouts = new ArenaPool<>(transientSize, LayoutConfigBuilder::new, LayoutConfigBuilder::reset);
-        transientTexts = new ArenaPool<>(transientSize, TextConfigBuilder::new, TextConfigBuilder::reset);
-        transientCustoms = new ArenaPool<>(transientSize, CustomConfigBuilder::new, CustomConfigBuilder::reset);
-        transientIds = new ArenaPool<>(transientSize, ElementId::new, ElementId::reset);
+    public static ClayJContext createDynamic() {
+        return new ClayJContext(DEFAULT_INITIAL_CAPACITY, DEFAULT_MEASURE_CAPACITY, false);
+    }
+
+    public static ClayJContext createFixed(int exactCapacity) {
+        return new ClayJContext(exactCapacity, exactCapacity, true);
+    }
+
+    public void ensureCapacity(int needed) {
+        if (needed <= maxElementCount) return;
+        if (fixedCapacity) {
+            maxElementsExceeded = true;
+            if (errorHandler != null) errorHandler.handleError(ClayJError.ELEMENTS_CAPACITY_EXCEEDED);
+            return;
+        }
+
+        int newCap = Math.max(needed, maxElementCount + (maxElementCount >> 1));
+
+        layoutElements = Arrays.copyOf(layoutElements, newCap);
+        renderCommands = Arrays.copyOf(renderCommands, newCap);
+        openLayoutElementStack = Arrays.copyOf(openLayoutElementStack, newCap);
+        layoutElementChildrenBuffer = Arrays.copyOf(layoutElementChildrenBuffer, newCap);
+        layoutElementChildren = Arrays.copyOf(layoutElementChildren, newCap);
+        openClipElementStack = Arrays.copyOf(openClipElementStack, newCap);
+        layoutElementClipElementIds = Arrays.copyOf(layoutElementClipElementIds, newCap);
+        layoutConfigs = Arrays.copyOf(layoutConfigs, newCap);
+        sharedElementConfigs = Arrays.copyOf(sharedElementConfigs, newCap);
+        borderElementConfigs = Arrays.copyOf(borderElementConfigs, newCap);
+        floatingElementConfigs = Arrays.copyOf(floatingElementConfigs, newCap);
+        scrollElementConfigs = Arrays.copyOf(scrollElementConfigs, newCap);
+        imageElementConfigs = Arrays.copyOf(imageElementConfigs, newCap);
+        textElementConfigs = Arrays.copyOf(textElementConfigs, newCap);
+        customElementConfigs = Arrays.copyOf(customElementConfigs, newCap);
+        layoutElementHashMapItemPool = Arrays.copyOf(layoutElementHashMapItemPool, newCap);
+        layoutElementTreeRoots = Arrays.copyOf(layoutElementTreeRoots, newCap);
+        textElementData = Arrays.copyOf(textElementData, newCap);
+        wrappedTextLines = Arrays.copyOf(wrappedTextLines, newCap);
+        layoutElementTreeNodes = Arrays.copyOf(layoutElementTreeNodes, newCap);
+        imageElementPointers = Arrays.copyOf(imageElementPointers, newCap);
+        pointerOverIds = Arrays.copyOf(pointerOverIds, newCap);
+        resizableBuffer = Arrays.copyOf(resizableBuffer, newCap);
+        treeNodeVisited = Arrays.copyOf(treeNodeVisited, newCap);
+
+        int[] newBuckets = new int[newCap];
+        Arrays.fill(newBuckets, -1);
+        for (int i = 0; i < layoutElementHashMapItemPoolLength; i++) {
+            LayoutElementHashMapItem item = layoutElementHashMapItemPool[i];
+            if (item != null && item.elementId.id != 0) {
+                int bucket = (item.elementId.id & 0x7FFFFFFF) % newCap;
+                item.nextIndex = newBuckets[bucket];
+                newBuckets[bucket] = i;
+            }
+        }
+        layoutElementsHashBuckets = newBuckets;
+        maxElementCount = newCap;
     }
 
     public void resetEphemeral() {
@@ -234,11 +268,71 @@ public final class ClayJContext {
         imageElementPointersLength = 0;
         dynamicElementIndex = 0;
 
-        transientDecls.reset();
-        transientLayouts.reset();
-        transientTexts.reset();
-        transientCustoms.reset();
-        transientIds.reset();
+        transientDeclsLength = 0;
+        transientLayoutsLength = 0;
+        transientTextsLength = 0;
+        transientCustomsLength = 0;
+        transientIdsLength = 0;
+        transientBordersLength = 0;
+        transientScrollsLength = 0;
+        transientFloatingsLength = 0;
+        transientImagesLength = 0;
+        transientSharedsLength = 0;
+    }
+
+    public ElementDeclBuilder takeDecl() {
+        if (transientDeclsLength >= transientDecls.length) {
+            transientDecls = Arrays.copyOf(transientDecls, transientDecls.length * 2);
+        }
+        int idx = transientDeclsLength++;
+        if (transientDecls[idx] == null) transientDecls[idx] = new ElementDeclBuilder();
+        ElementDeclBuilder b = transientDecls[idx];
+        b.reset();
+        return b;
+    }
+
+    public LayoutConfigBuilder takeLayout() {
+        if (transientLayoutsLength >= transientLayouts.length) {
+            transientLayouts = Arrays.copyOf(transientLayouts, transientLayouts.length * 2);
+        }
+        int idx = transientLayoutsLength++;
+        if (transientLayouts[idx] == null) transientLayouts[idx] = new LayoutConfigBuilder();
+        LayoutConfigBuilder b = transientLayouts[idx];
+        b.reset();
+        return b;
+    }
+
+    public TextConfigBuilder takeText() {
+        if (transientTextsLength >= transientTexts.length) {
+            transientTexts = Arrays.copyOf(transientTexts, transientTexts.length * 2);
+        }
+        int idx = transientTextsLength++;
+        if (transientTexts[idx] == null) transientTexts[idx] = new TextConfigBuilder();
+        TextConfigBuilder b = transientTexts[idx];
+        b.reset();
+        return b;
+    }
+
+    public CustomConfigBuilder takeCustom() {
+        if (transientCustomsLength >= transientCustoms.length) {
+            transientCustoms = Arrays.copyOf(transientCustoms, transientCustoms.length * 2);
+        }
+        int idx = transientCustomsLength++;
+        if (transientCustoms[idx] == null) transientCustoms[idx] = new CustomConfigBuilder();
+        CustomConfigBuilder b = transientCustoms[idx];
+        b.reset();
+        return b;
+    }
+
+    public ElementId takeId() {
+        if (transientIdsLength >= transientIds.length) {
+            transientIds = Arrays.copyOf(transientIds, transientIds.length * 2);
+        }
+        int idx = transientIdsLength++;
+        if (transientIds[idx] == null) transientIds[idx] = new ElementId();
+        ElementId id = transientIds[idx];
+        id.reset();
+        return id;
     }
 
     public LayoutElementHashMapItem getHashMapItem(int id) {
@@ -280,11 +374,24 @@ public final class ClayJContext {
         }
 
         if (layoutElementHashMapItemPoolLength >= layoutElementHashMapItemPool.length) {
-            if (errorHandler != null) errorHandler.handleError(ClayJError.ARENA_CAPACITY_EXCEEDED);
-            return null;
+            if (fixedCapacity) {
+                if (errorHandler != null) errorHandler.handleError(ClayJError.ARENA_CAPACITY_EXCEEDED);
+                return null;
+            } else {
+                ensureCapacity(maxElementCount + (maxElementCount >> 1));
+                bucket = (elementId.id & 0x7FFFFFFF) % layoutElementsHashBuckets.length;
+                prevIndex = -1;
+                currentIndex = layoutElementsHashBuckets[bucket];
+                while (currentIndex != -1) {
+                    prevIndex = currentIndex;
+                    currentIndex = layoutElementHashMapItemPool[currentIndex].nextIndex;
+                }
+            }
         }
 
         int newItemIndex = layoutElementHashMapItemPoolLength++;
+        if (layoutElementHashMapItemPool[newItemIndex] == null)
+            layoutElementHashMapItemPool[newItemIndex] = new LayoutElementHashMapItem();
         LayoutElementHashMapItem newItem = layoutElementHashMapItemPool[newItemIndex];
         newItem.reset();
 

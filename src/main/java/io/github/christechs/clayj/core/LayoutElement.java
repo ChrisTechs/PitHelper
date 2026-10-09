@@ -1,125 +1,144 @@
 /*
- * ClayJ is licensed under the zlib/libpng license.
- * Copyright (c) 2026 Christian Steenkamp
+ * Original Clay Library Copyright (c) 2024 Nic Barker
+ * Licensed under the zlib/libpng license.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from the
- * use of this software.
+ * See the LICENSE.md file in the root of this repository for the
+ * full zlib/libpng license text.
  *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- * claim that you wrote the original software. If you use this software in a
- * product, an acknowledgment in the product documentation would be
- * appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not
- * be misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
+ * Note: This source file has been altered from the original Clay
+ * distribution. The modifications are released into the public domain.
  */
-
 package io.github.christechs.clayj.core;
 
 import io.github.christechs.clayj.ClayJ;
 import io.github.christechs.clayj.ClayJContext;
-import io.github.christechs.clayj.config.ConfigBuilder;
-import io.github.christechs.clayj.config.ElementConfig;
-import io.github.christechs.clayj.config.LayoutConfigBuilder;
+import io.github.christechs.clayj.config.*;
 import io.github.christechs.clayj.enums.ClayJError;
 import io.github.christechs.clayj.enums.ElementConfigType;
 import io.github.christechs.clayj.math.Dimensions;
 
 public final class LayoutElement {
 
-    public static final int MAX_CONFIGS = 9;
-
-    public final Dimensions minDimensions = new Dimensions();
-
-    public final ElementConfig[] elementConfigs = new ElementConfig[MAX_CONFIGS];
+    public Dimensions minDimensions = new Dimensions(0f, 0f);
+    public Dimensions dimensions = new Dimensions(0f, 0f);
 
     public int childrenStart = -1;
     public int childrenLength = 0;
+    public int floatingChildrenCount = 0;
 
     public boolean isTextElement = false;
     public int textElementDataIndex = -1;
-    public Dimensions dimensions = new Dimensions();
-
-    public LayoutConfigBuilder layoutConfig;
-    public int elementConfigsLength = 0;
-
     public int id = 0;
 
+    public LayoutConfigBuilder layoutConfig;
+    public SharedConfigBuilder sharedConfig;
+    public TextConfigBuilder textConfig;
+    public ImageConfigBuilder imageConfig;
+    public FloatingConfigBuilder floatingConfig;
+    public ScrollConfigBuilder scrollConfig;
+    public BorderConfigBuilder borderConfig;
+    public CustomConfigBuilder customConfig;
+
     public LayoutElement() {
-        for (int i = 0; i < MAX_CONFIGS; i++) {
-            elementConfigs[i] = new ElementConfig();
-        }
     }
 
     public void set(LayoutElement other) {
-        this.minDimensions.set(other.minDimensions);
+        this.minDimensions = other.minDimensions;
+        this.dimensions = other.dimensions;
         this.childrenStart = other.childrenStart;
         this.childrenLength = other.childrenLength;
+        this.floatingChildrenCount = other.floatingChildrenCount;
         this.isTextElement = other.isTextElement;
         this.textElementDataIndex = other.textElementDataIndex;
-        this.dimensions.set(other.dimensions);
-        this.layoutConfig = other.layoutConfig;
-
-        this.elementConfigsLength = other.elementConfigsLength;
-        for (int i = 0; i < other.elementConfigsLength; i++) {
-            this.elementConfigs[i].set(other.elementConfigs[i]);
-        }
         this.id = other.id;
+
+        this.layoutConfig = other.layoutConfig;
+        this.sharedConfig = other.sharedConfig;
+        this.textConfig = other.textConfig;
+        this.imageConfig = other.imageConfig;
+        this.floatingConfig = other.floatingConfig;
+        this.scrollConfig = other.scrollConfig;
+        this.borderConfig = other.borderConfig;
+        this.customConfig = other.customConfig;
     }
 
     public ConfigBuilder getConfig(ElementConfigType type) {
-        for (int i = 0; i < elementConfigsLength; i++) {
-            if (elementConfigs[i].type == type) {
-                return elementConfigs[i].config;
-            }
+        if (type == null) return null;
+        switch (type) {
+            case SHARED:
+                return sharedConfig;
+            case TEXT:
+                return textConfig;
+            case IMAGE:
+                return imageConfig;
+            case FLOATING:
+                return floatingConfig;
+            case SCROLL:
+                return scrollConfig;
+            case BORDER:
+                return borderConfig;
+            case CUSTOM:
+                return customConfig;
+            default:
+                return null;
         }
-        return null;
     }
 
     public void attachConfig(ElementConfigType type, ConfigBuilder config) {
         ClayJContext context = ClayJ.getContext();
-
         if (getConfig(type) != null) {
             if (context != null && context.errorHandler != null) {
                 context.errorHandler.handleError(ClayJError.DUPLICATE_CONFIG);
             }
             return;
         }
-        if (elementConfigsLength >= MAX_CONFIGS) {
-            if (context != null && context.errorHandler != null) {
-                context.errorHandler.handleError(ClayJError.CONFIG_CAPACITY_EXCEEDED);
-            }
-            return;
-        }
 
-        ElementConfig slot = elementConfigs[elementConfigsLength++];
-        slot.type = type;
-        slot.config = config;
+        if (type == null) return;
+        switch (type) {
+            case SHARED:
+                this.sharedConfig = (SharedConfigBuilder) config;
+                break;
+            case TEXT:
+                this.textConfig = (TextConfigBuilder) config;
+                break;
+            case IMAGE:
+                this.imageConfig = (ImageConfigBuilder) config;
+                break;
+            case FLOATING:
+                this.floatingConfig = (FloatingConfigBuilder) config;
+                break;
+            case SCROLL:
+                this.scrollConfig = (ScrollConfigBuilder) config;
+                break;
+            case BORDER:
+                this.borderConfig = (BorderConfigBuilder) config;
+                break;
+            case CUSTOM:
+                this.customConfig = (CustomConfigBuilder) config;
+                break;
+            default:
+                break;
+        }
     }
 
     public void reset() {
         childrenStart = -1;
         childrenLength = 0;
+        floatingChildrenCount = 0;
         isTextElement = false;
         textElementDataIndex = -1;
+        id = 0;
 
-        dimensions.width = 0;
-        dimensions.height = 0;
-        minDimensions.width = 0;
-        minDimensions.height = 0;
+        dimensions = new Dimensions(0f, 0f);
+        minDimensions = new Dimensions(0f, 0f);
 
         layoutConfig = null;
-
-        for (int i = 0; i < elementConfigsLength; i++) {
-            elementConfigs[i].reset();
-        }
-        elementConfigsLength = 0;
-
-        id = 0;
+        sharedConfig = null;
+        textConfig = null;
+        imageConfig = null;
+        floatingConfig = null;
+        scrollConfig = null;
+        borderConfig = null;
+        customConfig = null;
     }
 }

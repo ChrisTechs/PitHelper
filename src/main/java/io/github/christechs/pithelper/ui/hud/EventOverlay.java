@@ -19,10 +19,13 @@
 package io.github.christechs.pithelper.ui.hud;
 
 import io.github.christechs.clayj.ClayJ;
+import io.github.christechs.clayj.ClayJ.*;
+import io.github.christechs.clayj.ClayJContext;
 import io.github.christechs.clayj.LayoutResults;
 import io.github.christechs.clayj.config.FloatingConfigBuilder;
 import io.github.christechs.clayj.config.ImageConfigBuilder;
-import io.github.christechs.clayj.enums.LayoutAlignmentY;
+import io.github.christechs.clayj.enums.AttachToElement;
+import io.github.christechs.clayj.math.Color;
 import io.github.christechs.clayj.math.Dimensions;
 import io.github.christechs.clayj.math.Vector2;
 import io.github.christechs.pithelper.config.PitConfig;
@@ -43,11 +46,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.concurrent.TimeUnit;
 
 import static io.github.christechs.clayj.ClayJ.*;
-import static io.github.christechs.clayj.enums.AttachToElement.ROOT;
-import static io.github.christechs.clayj.enums.LayoutAlignmentX.LEFT;
-import static io.github.christechs.clayj.enums.LayoutDirection.LEFT_TO_RIGHT;
-import static io.github.christechs.clayj.enums.LayoutDirection.TOP_TO_BOTTOM;
-import static io.github.christechs.clayj.enums.SizingType.*;
 
 public class EventOverlay {
 
@@ -59,15 +57,16 @@ public class EventOverlay {
         ScaledResolution sr = new ScaledResolution(mc);
 
         if (ClayJ.getContext() == null) {
-            ClayJ.initialize(
-                    2048,
-                    2048,
-                    new Dimensions(sr.getScaledWidth(), sr.getScaledHeight())
-            );
-            ClayJ.setMeasureTextFunction((text, start, len, config, outDimensions) -> {
+            ClayJContext context = ClayJContext.createDynamic();
+            ClayJ.CONTEXT.set(context);
+
+            ClayJ.setLayoutDimensions(sr.getScaledWidth(), sr.getScaledHeight());
+            ClayJ.setMeasureTextFunction((text, start, len, config) -> {
                 String sub = text.subSequence(start, start + len).toString();
-                float scale = config.fontSize > 0 ? (float) config.fontSize : 1.0f;
-                outDimensions.set((mc.fontRendererObj.getStringWidth(sub) * scale), (mc.fontRendererObj.FONT_HEIGHT * scale));
+                int scale = config.fontSize > 0 ? config.fontSize : 1;
+                int stringWidth = mc.fontRendererObj.getStringWidth(sub) * scale;
+                int stringHeight = mc.fontRendererObj.FONT_HEIGHT * scale;
+                return new Dimensions(stringWidth, stringHeight);
             });
         }
 
@@ -93,15 +92,17 @@ public class EventOverlay {
         float renderY = PitConfig.hud().overlayY * (sr.getScaledHeight() / scale);
         float renderW = PitConfig.hud().overlayWidth / scale;
 
-        el(decl().floating(new FloatingConfigBuilder()
-                .attachTo(ROOT)
-                .offset(renderX, renderY))
-                .bg(20, 20, 22, 180)
-                .radius(8).layout(layout()
-                        .sizing(FIXED, renderW, FIT, 0)
-                        .dir(TOP_TO_BOTTOM)
-                        .padding(8, 8).gap(6)),
-                () -> {
+        try (ClayElement container = el(decl().floating(new FloatingConfigBuilder()
+                        .attachTo(AttachToElement.ROOT)
+                        .offset(renderX, renderY))
+                .bg(new Color(20, 20, 22, 180))
+                .radius(8)
+                .layout(layout()
+                        .widthFixed(renderW).heightFit()
+                        .dirTopToBottom()
+                        .padding(8, 8, 8, 8)
+                        .gap(6)))) {
+
             long currentTime = System.currentTimeMillis();
             if (EventFetcher.activeEvent != null) {
                 PitEvent ae = EventFetcher.activeEvent;
@@ -121,12 +122,11 @@ public class EventOverlay {
                     count++;
                 }
             }
-            el(decl().layout(layout()
-                    .sizing(GROW, 0, FIXED, 2)),
-                    () -> {}
-            );
-            text("Credit to BrookeAFK for event data.", txt().size(1).color(120, 120, 120, 255));
-        });
+
+            try (ClayElement div = el(decl().layout(layout().widthGrow().heightFixed(2)))) {
+            }
+            text("Credit to BrookeAFK for event data.", txt().size(1).color(new Color(120, 120, 120, 255)));
+        }
 
         LayoutResults results = ClayJ.endLayout();
         GlStateManager.pushMatrix();
@@ -144,18 +144,20 @@ public class EventOverlay {
         for (NotificationManager.VisualNotif notif : NotificationManager.activeNotifications) {
             float yPos = 20 + (index * 45);
 
-            el(decl().floating(new FloatingConfigBuilder()
-                    .attachTo(ROOT)
-                    .offset(sr.getScaledWidth() / 2f - 100, yPos))
-                    .bg(20, 20, 22, 220)
+            try (ClayElement notifContainer = el(decl().floating(new FloatingConfigBuilder()
+                            .attachTo(AttachToElement.ROOT)
+                            .offset(sr.getScaledWidth() / 2f - 100, yPos))
+                    .bg(new Color(20, 20, 22, 220))
                     .radius(8)
                     .layout(layout()
-                            .sizing(FIXED, 200, FIT, 0)
-                            .dir(TOP_TO_BOTTOM)
-                            .padding(10, 10).gap(4)), () -> {
+                            .widthFixed(200).heightFit()
+                            .dirTopToBottom()
+                            .padding(10, 10, 10, 10)
+                            .gap(4)))) {
+
                 text(
                         "Event Starting Soon!",
-                        txt().size(1).color(255, 170, 0, 255)
+                        txt().size(1).color(new Color(255, 170, 0, 255))
                 );
 
                 if (notif.event != null) {
@@ -169,9 +171,9 @@ public class EventOverlay {
                 } else {
                     text(
                             notif.fallbackText,
-                            txt().size(1).color(255, 255, 255, 255));
+                            txt().size(1).color(new Color(255, 255, 255, 255)));
                 }
-            });
+            }
 
             index++;
         }
@@ -179,39 +181,34 @@ public class EventOverlay {
     }
 
     private static void drawUnifiedRow(PitEvent e, long timeDiff, boolean isActive) {
-        el(decl().layout(layout()
-                .sizing(GROW, 0, FIT, 0)
-                .dir(LEFT_TO_RIGHT)
-                .align(LEFT, LayoutAlignmentY.CENTER)
-                .gap(6)),
-                () -> {
+        try (ClayElement row = el(decl().layout(layout()
+                .widthGrow().heightFit()
+                .dirLeftToRight()
+                .alignLeft().alignCenterY()
+                .gap(6)))) {
 
-            el(decl().image(new ImageConfigBuilder()
-                    .data(IconCache.get(e.event))
-                    .sourceDim(16, 16)).layout(layout()
-                    .sizing(FIXED, 16, FIXED, 16)),
-                    () -> {}
+            try (ClayElement icon = el(decl().image(new ImageConfigBuilder()
+                            .data(IconCache.get(e.event))
+                            .sourceDim(new Dimensions(16, 16)))
+                    .layout(layout().widthFixed(16).heightFixed(16)))) {
+            }
+
+            text((isActive ? "§a" : "§f") + e.event,
+                    txt().size(1).color(new Color(255, 255, 255, 255))
             );
 
-            text((
-                    isActive ? "§a" : "§f") + e.event,
-                    txt().size(1).color(255, 255, 255, 255)
-            );
-
-            el(decl().layout(layout()
-                    .sizing(GROW, 0, FIXED, 0)),
-                    () -> {}
-            );
+            try (ClayElement spacer = el(decl().layout(layout().widthGrow().heightFixed(0)))) {
+            }
 
             text(
                     formatTimeVerbose(timeDiff),
-                    txt().size(1)
-                            .color(
-                                    isActive ? 85 : 170,
-                                    255, isActive ? 85 : 170,
-                                    255));
+                    txt().size(1).color(new Color(
+                            isActive ? 85 : 170,
+                            255,
+                            isActive ? 85 : 170,
+                            255))
+            );
         }
-        );
     }
 
     public static String formatTimeVerbose(long ms) {
@@ -238,7 +235,6 @@ public class EventOverlay {
         if (PitConfig.general().onlyOnHypixel && !ServerState.onHypixel) return;
         if (ServerState.onHypixel && ServerState.currentGameMode != null) {
             Boolean toggle = PitConfig.gamemodes().toggles.getOrDefault(ServerState.currentGameMode, false);
-
             if (!toggle) return;
         }
 

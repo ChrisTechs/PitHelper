@@ -22,6 +22,7 @@ import io.github.christechs.clayj.config.ElementDeclBuilder;
 import io.github.christechs.clayj.config.LayoutConfigBuilder;
 import io.github.christechs.clayj.config.TextConfigBuilder;
 import io.github.christechs.clayj.enums.SizingType;
+import io.github.christechs.clayj.math.SizingAxis;
 import io.github.christechs.pithelper.ui.xml.XmlContext;
 import org.w3c.dom.Element;
 
@@ -73,7 +74,7 @@ public abstract class XmlNode {
             }
         }
 
-        lyt.sizing(typeX, valX, typeY, valY);
+        lyt.sizing(new SizingAxis(typeX, valX), new SizingAxis(typeY, valY));
     }
 
     protected void applyColor(ElementDeclBuilder decl, String hex) {

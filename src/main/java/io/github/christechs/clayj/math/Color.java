@@ -1,44 +1,87 @@
 /*
- * ClayJ is licensed under the zlib/libpng license.
- * Copyright (c) 2026 Christian Steenkamp
+ * This is free and unencumbered software released into the public domain.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from the
- * use of this software.
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- * claim that you wrote the original software. If you use this software in a
- * product, an acknowledgment in the product documentation would be
- * appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not
- * be misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
+ * See the LICENSE.md file for more information, or visit <https://unlicense.org/>
  */
-
 package io.github.christechs.clayj.math;
 
 public class Color {
-    public float r, g, b, a;
 
-    public Color() {
+    public float r() {
+        return r;
+    }
+
+    public float g() {
+        return g;
+    }
+
+    public float b() {
+        return b;
+    }
+
+    public float a() {
+        return a;
     }
 
     public Color(float r, float g, float b, float a) {
-        set(r, g, b, a);
-    }
-
-    public void set(Color other) {
-        set(other.r, other.g, other.b, other.a);
-    }
-
-    public void set(float r, float g, float b, float a) {
         this.r = r;
         this.g = g;
         this.b = b;
         this.a = a;
+    }
+
+    public float r, g, b, a;
+
+    public Color set(Color other) {
+        return new Color(other.r(), other.g(), other.b(), other.a());
+    }
+
+    public Color set(float r, float g, float b, float a) {
+        return new Color(r, g, b, a);
+    }
+
+    public Color r(float r) {
+        return new Color(r, this.g, this.b, this.a);
+    }
+
+    public Color g(float g) {
+        return new Color(this.r, g, this.b, this.a);
+    }
+
+    public Color b(float b) {
+        return new Color(this.r, this.g, b, this.a);
+    }
+
+    public Color a(float a) {
+        return new Color(this.r, this.g, this.b, a);
+    }
+
+    public Color parseHex(String hex) {
+        if (hex == null || hex.isEmpty()) return this;
+
+        if (hex.startsWith("#")) {
+            hex = hex.substring(1);
+        }
+
+        try {
+            if (hex.length() == 6) {
+                return new Color(
+                        Integer.parseInt(hex.substring(0, 2), 16),
+                        Integer.parseInt(hex.substring(2, 4), 16),
+                        Integer.parseInt(hex.substring(4, 6), 16),
+                        255f
+                );
+            } else if (hex.length() == 8) {
+                return new Color(
+                        Integer.parseInt(hex.substring(0, 2), 16),
+                        Integer.parseInt(hex.substring(2, 4), 16),
+                        Integer.parseInt(hex.substring(4, 6), 16),
+                        Integer.parseInt(hex.substring(6, 8), 16)
+                );
+            }
+        } catch (NumberFormatException ignored) {
+        }
+
+        return this;
     }
 }

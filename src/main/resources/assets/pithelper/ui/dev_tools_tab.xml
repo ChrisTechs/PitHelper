@@ -1,5 +1,5 @@
 <Element dir="TOP_TO_BOTTOM" gap="15" width="GROW" height="GROW">
-    <Text text="Developer Tools" size="2" color="#FFFFFF"/>
+    <Text text="Developer Tools" size="2" color="${theme.text}"/>
 
     <Element dir="LEFT_TO_RIGHT" gap="15" width="GROW" height="FIT">
         <Button id="Btn_TestVisNotif" text="Test Visual Notif" onClick="testVis"/>

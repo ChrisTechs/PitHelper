@@ -1,24 +1,13 @@
 /*
- * ClayJ is licensed under the zlib/libpng license.
- * Copyright (c) 2026 Christian Steenkamp
+ * Original Clay Library Copyright (c) 2024 Nic Barker
+ * Licensed under the zlib/libpng license.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from the
- * use of this software.
+ * See the LICENSE.md file in the root of this repository for the
+ * full zlib/libpng license text.
  *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- * claim that you wrote the original software. If you use this software in a
- * product, an acknowledgment in the product documentation would be
- * appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not
- * be misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
+ * Note: This source file has been altered from the original Clay
+ * distribution. The modifications are released into the public domain.
  */
-
 package io.github.christechs.clayj.config;
 
 import io.github.christechs.clayj.enums.LayoutAlignmentX;
@@ -31,8 +20,8 @@ import io.github.christechs.clayj.math.SizingAxis;
 
 public final class LayoutConfigBuilder implements ConfigBuilder {
 
-    public final Sizing sizing = new Sizing();
-    public final Padding padding = new Padding();
+    public Sizing sizing = new Sizing(new SizingAxis(SizingType.FIT), new SizingAxis(SizingType.FIT));
+    public Padding padding = new Padding(0);
 
     public int childGap = 0;
     public LayoutAlignmentX alignX = LayoutAlignmentX.LEFT;
@@ -42,58 +31,119 @@ public final class LayoutConfigBuilder implements ConfigBuilder {
     public LayoutConfigBuilder() {
     }
 
-    public void set(LayoutConfigBuilder other) {
-        this.sizing.set(other.sizing);
-        this.padding.set(other.padding);
+    public LayoutConfigBuilder set(LayoutConfigBuilder other) {
+        this.sizing = other.sizing;
+        this.padding = other.padding;
         this.childGap = other.childGap;
         this.alignX = other.alignX;
         this.alignY = other.alignY;
         this.direction = other.direction;
-    }
-
-    public LayoutConfigBuilder sizing(SizingAxis width, SizingAxis height) {
-        sizing.set(width, height);
         return this;
     }
 
-    public LayoutConfigBuilder sizing(SizingType wType, float wVal, SizingType hType, float hVal) {
-        sizing.width.type = wType;
-        if (wType == SizingType.PERCENT) {
-            sizing.width.percent = wVal;
-        } else if (wType == SizingType.GROW) {
-            sizing.width.minMax.min = 0;
-            sizing.width.minMax.max = wVal;
-        } else {
-            sizing.width.minMax.min = wVal;
-            sizing.width.minMax.max = wVal;
-        }
+    public LayoutConfigBuilder sizing(SizingAxis width, SizingAxis height) {
+        this.sizing = new Sizing(width, height);
+        return this;
+    }
 
-        sizing.height.type = hType;
-        if (hType == SizingType.PERCENT) {
-            sizing.height.percent = hVal;
-        } else if (hType == SizingType.GROW) {
-            sizing.height.minMax.min = 0;
-            sizing.height.minMax.max = hVal;
-        } else {
-            sizing.height.minMax.min = hVal;
-            sizing.height.minMax.max = hVal;
-        }
+    public LayoutConfigBuilder widthGrow() {
+        this.sizing = new Sizing(this.sizing.width().type(SizingType.GROW), this.sizing.height());
+        return this;
+    }
+
+    public LayoutConfigBuilder widthFixed(float width) {
+        this.sizing = new Sizing(new SizingAxis(SizingType.FIXED, width, width), this.sizing.height());
+        return this;
+    }
+
+    public LayoutConfigBuilder widthPercent(float percent) {
+        this.sizing = new Sizing(new SizingAxis(SizingType.PERCENT, percent), this.sizing.height());
+        return this;
+    }
+
+    public LayoutConfigBuilder widthFit() {
+        this.sizing = new Sizing(this.sizing.width().type(SizingType.FIT), this.sizing.height());
+        return this;
+    }
+
+    public LayoutConfigBuilder heightGrow() {
+        this.sizing = new Sizing(this.sizing.width(), this.sizing.height().type(SizingType.GROW));
+        return this;
+    }
+
+    public LayoutConfigBuilder heightFixed(float height) {
+        this.sizing = new Sizing(this.sizing.width(), new SizingAxis(SizingType.FIXED, height, height));
+        return this;
+    }
+
+    public LayoutConfigBuilder heightPercent(float percent) {
+        this.sizing = new Sizing(this.sizing.width(), new SizingAxis(SizingType.PERCENT, percent));
+        return this;
+    }
+
+    public LayoutConfigBuilder heightFit() {
+        this.sizing = new Sizing(this.sizing.width(), this.sizing.height().type(SizingType.FIT));
+        return this;
+    }
+
+    public LayoutConfigBuilder alignCenterX() {
+        this.alignX = LayoutAlignmentX.CENTER;
+        return this;
+    }
+
+    public LayoutConfigBuilder alignCenterY() {
+        this.alignY = LayoutAlignmentY.CENTER;
+        return this;
+    }
+
+    public LayoutConfigBuilder alignCenter() {
+        this.alignX = LayoutAlignmentX.CENTER;
+        this.alignY = LayoutAlignmentY.CENTER;
+        return this;
+    }
+
+    public LayoutConfigBuilder alignRight() {
+        this.alignX = LayoutAlignmentX.RIGHT;
+        return this;
+    }
+
+    public LayoutConfigBuilder alignBottom() {
+        this.alignY = LayoutAlignmentY.BOTTOM;
+        return this;
+    }
+
+    public LayoutConfigBuilder alignLeft() {
+        this.alignX = LayoutAlignmentX.LEFT;
+        return this;
+    }
+
+    public LayoutConfigBuilder alignTop() {
+        this.alignY = LayoutAlignmentY.TOP;
+        return this;
+    }
+
+    public LayoutConfigBuilder dirTopToBottom() {
+        this.direction = LayoutDirection.TOP_TO_BOTTOM;
+        return this;
+    }
+
+    public LayoutConfigBuilder dirLeftToRight() {
+        this.direction = LayoutDirection.LEFT_TO_RIGHT;
         return this;
     }
 
     public LayoutConfigBuilder padding(int all) {
-        this.padding.left = all;
-        this.padding.right = all;
-        this.padding.top = all;
-        this.padding.bottom = all;
+        this.padding = new Padding(all);
         return this;
     }
 
     public LayoutConfigBuilder padding(int x, int y) {
-        this.padding.left = x;
-        this.padding.right = x;
-        this.padding.top = y;
-        this.padding.bottom = y;
+        this.padding = new Padding(x, x, y, y);
+        return this;
+    }
+
+    public LayoutConfigBuilder padding(int left, int right, int top, int bottom) {
+        this.padding = new Padding(left, right, top, bottom);
         return this;
     }
 
@@ -102,36 +152,12 @@ public final class LayoutConfigBuilder implements ConfigBuilder {
         return this;
     }
 
-    public LayoutConfigBuilder align(LayoutAlignmentX x, LayoutAlignmentY y) {
-        this.alignX = x;
-        this.alignY = y;
-        return this;
-    }
-
-    public LayoutConfigBuilder dir(LayoutDirection direction) {
-        this.direction = direction;
-        return this;
-    }
-
     public void reset() {
-        sizing.width.type = SizingType.FIT;
-        sizing.width.percent = 0f;
-        sizing.width.minMax.min = 0f;
-        sizing.width.minMax.max = 0f;
-
-        sizing.height.type = SizingType.FIT;
-        sizing.height.percent = 0f;
-        sizing.height.minMax.min = 0f;
-        sizing.height.minMax.max = 0f;
-
-        padding.left = 0;
-        padding.right = 0;
-        padding.top = 0;
-        padding.bottom = 0;
-
-        childGap = 0;
-        alignX = LayoutAlignmentX.LEFT;
-        alignY = LayoutAlignmentY.TOP;
-        direction = LayoutDirection.LEFT_TO_RIGHT;
+        this.sizing = new Sizing(new SizingAxis(SizingType.FIT), new SizingAxis(SizingType.FIT));
+        this.padding = new Padding(0);
+        this.childGap = 0;
+        this.alignX = LayoutAlignmentX.LEFT;
+        this.alignY = LayoutAlignmentY.TOP;
+        this.direction = LayoutDirection.LEFT_TO_RIGHT;
     }
 }

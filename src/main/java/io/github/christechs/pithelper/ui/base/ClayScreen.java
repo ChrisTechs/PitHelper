@@ -19,6 +19,7 @@
 package io.github.christechs.pithelper.ui.base;
 
 import io.github.christechs.clayj.ClayJ;
+import io.github.christechs.clayj.ClayJContext;
 import io.github.christechs.clayj.LayoutResults;
 import io.github.christechs.clayj.math.Dimensions;
 import io.github.christechs.clayj.math.Vector2;
@@ -42,16 +43,21 @@ public abstract class ClayScreen extends GuiScreen {
         super.initGui();
         Keyboard.enableRepeatEvents(true);
         if (!initialized) {
-            if (ClayJ.getContext() == null) {
-                ClayJ.initialize(2048, 2048, new Dimensions(this.width, this.height));
-                ClayJ.setMeasureTextFunction((text, start, len, config, outDimensions) -> {
-                    String sub = text.subSequence(start, start + len).toString();
-                    int scale = config.fontSize > 0 ? config.fontSize : 1;
-                    int stringWidth = mc.fontRendererObj.getStringWidth(sub) * scale;
-                    int stringHeight = mc.fontRendererObj.FONT_HEIGHT * scale;
-                    outDimensions.set(stringWidth, stringHeight);
-                });
+            ClayJContext context = ClayJ.getContext();
+            if (context == null) {
+                context = ClayJContext.createDynamic();
+                ClayJ.CONTEXT.set(context);
             }
+
+            ClayJ.setLayoutDimensions(this.width, this.height);
+            ClayJ.setMeasureTextFunction((text, start, len, config) -> {
+                String sub = text.subSequence(start, start + len).toString();
+                int scale = config.fontSize > 0 ? config.fontSize : 1;
+                int stringWidth = mc.fontRendererObj.getStringWidth(sub) * scale;
+                int stringHeight = mc.fontRendererObj.FONT_HEIGHT * scale;
+                return new Dimensions(stringWidth, stringHeight);
+            });
+
             initialized = true;
         }
     }

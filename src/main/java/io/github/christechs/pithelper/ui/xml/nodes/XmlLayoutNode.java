@@ -1,25 +1,9 @@
-/*
- * PitHelper - A Hypixel The Pit Helper Mod.
- * Copyright (C) 2026 Christian Steenkamp
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package io.github.christechs.pithelper.ui.xml.nodes;
 
+import io.github.christechs.clayj.ClayJ.*;
 import io.github.christechs.clayj.config.ElementDeclBuilder;
 import io.github.christechs.clayj.config.LayoutConfigBuilder;
+import io.github.christechs.clayj.config.ScrollConfigBuilder;
 import io.github.christechs.clayj.enums.LayoutAlignmentX;
 import io.github.christechs.clayj.enums.LayoutAlignmentY;
 import io.github.christechs.clayj.enums.LayoutDirection;
@@ -63,7 +47,7 @@ public class XmlLayoutNode extends XmlNode {
         if (rRadius != null && !rRadius.isEmpty()) {
             String[] r = rRadius.split(",");
             try {
-                if (r.length == 1) declaration.radius(Integer.parseInt(r[0].trim()));
+                if (r.length == 1) declaration.radius(new CornerRadius(Float.parseFloat(r[0].trim())));
                 else if (r.length == 4)
                     declaration.radius(new CornerRadius(Float.parseFloat(r[0].trim()), Float.parseFloat(r[1].trim()), Float.parseFloat(r[2].trim()), Float.parseFloat(r[3].trim())));
             } catch (Exception ignored) {
@@ -73,7 +57,11 @@ public class XmlLayoutNode extends XmlNode {
         String rScroll = ctx.resolveString(scroll);
         if (rScroll != null && !rScroll.isEmpty()) {
             String[] s = rScroll.split(",");
-            if (s.length == 2) declaration.scroll(Boolean.parseBoolean(s[0].trim()), Boolean.parseBoolean(s[1].trim()));
+            if (s.length == 2) {
+                declaration.scroll(new ScrollConfigBuilder()
+                        .horizontal(Boolean.parseBoolean(s[0].trim()))
+                        .vertical(Boolean.parseBoolean(s[1].trim())));
+            }
         }
 
         LayoutConfigBuilder lyt = layout();
@@ -82,7 +70,14 @@ public class XmlLayoutNode extends XmlNode {
         String rDir = ctx.resolveString(dir);
         if (rDir != null && !rDir.isEmpty()) {
             try {
-                lyt.dir(LayoutDirection.valueOf(rDir));
+                switch (LayoutDirection.valueOf(rDir)) {
+                    case LEFT_TO_RIGHT:
+                        lyt.dirLeftToRight();
+                        break;
+                    case TOP_TO_BOTTOM:
+                        lyt.dirTopToBottom();
+                        break;
+                }
             } catch (Exception ignored) {
             }
         }
@@ -99,8 +94,10 @@ public class XmlLayoutNode extends XmlNode {
         if (rPadding != null && !rPadding.isEmpty()) {
             String[] p = rPadding.split(",");
             try {
-                if (p.length == 1) lyt.padding(Integer.parseInt(p[0].trim()), Integer.parseInt(p[0].trim()));
-                else lyt.padding(Integer.parseInt(p[0].trim()), Integer.parseInt(p[1].trim()));
+                if (p.length == 1)
+                    lyt.padding(Integer.parseInt(p[0].trim()), Integer.parseInt(p[0].trim()), Integer.parseInt(p[0].trim()), Integer.parseInt(p[0].trim()));
+                else
+                    lyt.padding(Integer.parseInt(p[0].trim()), Integer.parseInt(p[0].trim()), Integer.parseInt(p[1].trim()), Integer.parseInt(p[1].trim()));
             } catch (Exception ignored) {
             }
         }
@@ -109,14 +106,15 @@ public class XmlLayoutNode extends XmlNode {
         if (rAlign != null && !rAlign.isEmpty()) {
             String[] a = rAlign.split(",");
             try {
-                lyt.align(LayoutAlignmentX.valueOf(a[0].trim()), LayoutAlignmentY.valueOf(a[1].trim()));
+                lyt.alignX = LayoutAlignmentX.valueOf(a[0].trim());
+                lyt.alignY = LayoutAlignmentY.valueOf(a[1].trim());
             } catch (Exception ignored) {
             }
         }
 
         declaration.layout(lyt);
-        el(declaration, () -> {
+        try (ClayElement element = el(declaration)) {
             for (XmlNode child : children) child.render(ctx);
-        });
+        }
     }
 }

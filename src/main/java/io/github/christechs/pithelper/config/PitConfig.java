@@ -1,21 +1,3 @@
-/*
- * PitHelper - A Hypixel The Pit Helper Mod.
- * Copyright (C) 2026 Christian Steenkamp
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package io.github.christechs.pithelper.config;
 
 import io.github.christechs.config.*;
@@ -27,28 +9,31 @@ import io.github.christechs.pithelper.data.HypixelGameMode;
 import io.github.christechs.pithelper.data.PitEventType;
 import io.github.christechs.pithelper.ui.screen.EditOverlayScreen;
 import io.github.christechs.pithelper.ui.utils.IconCache;
+import io.github.christechs.pithelper.ui.utils.ThemeManager;
 import io.github.christechs.pithelper.utils.ServerState;
 import net.minecraft.client.Minecraft;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PitConfig {
 
     public static PitConfig INSTANCE = new PitConfig();
+    private static boolean dynamicConfigsRegistered = false;
 
     @ConfigCategory(name = "General Settings")
     public General general = new General();
+    @ConfigCategory(name = "Themes")
+    public Themes themes = new Themes();
     @ConfigCategory(name = "HUD Settings")
     public Hud hud = new Hud();
-    @ConfigCategory(name = "API")
-    public Api api = new Api();
     @ConfigCategory(name = "Active Game Modes")
     public GameModes gamemodes = new GameModes();
     @ConfigCategory(name = "Event Notifications")
     public Events events = new Events();
-
     @ConfigCategory(name = "Social & Lobby")
     public Social social = new Social();
 
@@ -64,10 +49,6 @@ public class PitConfig {
         return INSTANCE.hud;
     }
 
-    public static Api api() {
-        return INSTANCE.api;
-    }
-
     public static GameModes gamemodes() {
         return INSTANCE.gamemodes;
     }
@@ -77,7 +58,22 @@ public class PitConfig {
     }
 
     public static void registerDynamicConfigs(File file) {
+        if (dynamicConfigsRegistered) return;
+        dynamicConfigsRegistered = true;
+
+        if (ThemeManager.THEMES.size() <= 1) {
+            ThemeManager.loadThemesFromZip();
+        }
+
+        if (ThemeManager.THEMES.containsKey(INSTANCE.general.activeTheme)) {
+            ThemeManager.activeTheme = ThemeManager.THEMES.get(INSTANCE.general.activeTheme);
+        } else {
+            INSTANCE.general.activeTheme = "Challenger Deep";
+            ThemeManager.activeTheme = ThemeManager.THEMES.get("Challenger Deep");
+        }
+
         ConfigCategoryData generalCat = getCategoryByName("General Settings");
+        ConfigCategoryData themesCat = getCategoryByName("Themes");
         ConfigCategoryData hudCat = getCategoryByName("HUD Settings");
         ConfigCategoryData gamemodesCat = getCategoryByName("Active Game Modes");
         ConfigCategoryData eventsCat = getCategoryByName("Event Notifications");
@@ -87,11 +83,34 @@ public class PitConfig {
                 INSTANCE = new PitConfig();
                 ConfigManager.save();
                 ConfigManager.init(file);
+                dynamicConfigsRegistered = false;
                 registerDynamicConfigs(file);
             }));
 
             generalCat.elements.add(1, ConfigBuilder.display("serverStatus", "Current Server", "", () ->
                     ServerState.onHypixel && ServerState.currentGameMode != null ? ServerState.currentGameMode.niceName : "Not on Hypixel"));
+        }
+
+        if (themesCat != null) {
+            themesCat.elements.clear();
+            themesCat.elements.add(ConfigBuilder.display("activeThemeDisp", "Current Active Theme", "", () -> INSTANCE.general.activeTheme));
+
+            List<String> themeNames = new ArrayList<>(ThemeManager.THEMES.keySet());
+            themeNames.sort(String::compareToIgnoreCase);
+
+            for (String themeName : themeNames) {
+                themesCat.elements.add(ConfigBuilder.button(
+                        "theme_btn_" + themeName.replace(" ", "_"),
+                        themeName,
+                        "Click to apply the " + themeName + " theme.",
+                        "Apply",
+                        () -> {
+                            ThemeManager.activeTheme = ThemeManager.THEMES.get(themeName);
+                            INSTANCE.general.activeTheme = themeName;
+                            ConfigManager.save();
+                        }
+                ));
+            }
         }
 
         if (hudCat != null) {
@@ -151,22 +170,22 @@ public class PitConfig {
         return ConfigManager.CATEGORIES.stream().filter(c -> c.name.equals(name)).findFirst().orElse(null);
     }
 
+    public static class Themes {
+    }
+
     public static class Social {
         @ConfigProperty(name = "Notify Friends Join", description = "Alerts you when a friend enters the lobby.")
         public boolean notifyFriends = true;
         @ConfigProperty(name = "Notify Enemies Join", description = "Alerts you when an enemy enters the lobby.")
         public boolean notifyEnemies = true;
-
         @ConfigProperty(name = "Highlight Friends", description = "Highlights friends to be green.")
         public boolean highlightFriends = true;
         @ConfigProperty(name = "Highlight Enemies", description = "Highlights enemies to be red.")
         public boolean highlightEnemies = true;
-
         @ConfigProperty(name = "Highlight Chain Players", description = "Highlights chain players (0-1 iron pieces) in pink.")
         public boolean highlightChain = false;
         @ConfigProperty(name = "Highlight Iron Players", description = "Highlights iron players (2+ iron pieces) in pink.")
         public boolean highlightIron = false;
-
         @ConfigProperty(name = "Lobby Prestige Scanner", description = "Calculates average lobby prestige on join.")
         public boolean lobbyScanner = true;
 
@@ -179,26 +198,23 @@ public class PitConfig {
     public static class General {
         @ConfigProperty(name = "Only on Hypixel", description = "Enable mod only when connected to Hypixel.")
         public boolean onlyOnHypixel = true;
-
         @ConfigProperty(name = "Chat Alerts", description = "Enable chat alerts for events.")
         public boolean chatNotifications = true;
         @ConfigProperty(name = "Visual Popups", description = "Enable visual popups for events.")
         public boolean visualNotifications = true;
-
         @ConfigProperty(name = "Quick Maths to Clipboard", description = "Copy Quick Maths answers to clipboard.")
         public boolean quickMathsClipboard = false;
         @ConfigProperty(name = "Quick Maths Auto Chat", description = "Automatically open Minecraft chat with the answer.")
         public boolean quickMathsAutoOpenChat = false;
-
         @ConfigProperty(name = "Block Movement After Death", description = "Prevents you from walking immediately after respawning.")
         public boolean blockMovementAfterDeath = false;
-
         @ConfigRange(min = 1, max = 10)
         @ConfigProperty(name = "Block Movement Time", description = "Seconds to block movement.")
         public int blockMovementSeconds = 3;
-
         @ConfigProperty(name = "Auto Spawn Keybind", description = "Automatically retries /spawn until combat timer expires.")
         public boolean autoSpawnEnabled = true;
+        @ConfigHidden
+        public String activeTheme = "Challenger Deep";
     }
 
     public static class Hud {
@@ -220,11 +236,6 @@ public class PitConfig {
         public float overlayWidth = 150f;
         @ConfigHidden
         public float overlayScale = 1.0f;
-    }
-
-    public static class Api {
-        @ConfigHidden
-        public String pitHelperApiKey = "";
     }
 
     public static class GameModes {

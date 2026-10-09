@@ -18,13 +18,16 @@
 
 package io.github.christechs.pithelper.ui.base;
 
-import io.github.christechs.clayj.enums.LayoutAlignmentX;
-import io.github.christechs.clayj.enums.LayoutAlignmentY;
+import io.github.christechs.clayj.ClayJ.ClayElement;
+import io.github.christechs.config.ConfigButton;
 import io.github.christechs.config.ConfigCategoryData;
 import io.github.christechs.config.ConfigElement;
 import io.github.christechs.config.ConfigManager;
+import io.github.christechs.pithelper.config.PitConfig;
 import io.github.christechs.pithelper.ui.components.ClayComponents;
 import io.github.christechs.pithelper.ui.components.ClayConfigUI;
+import io.github.christechs.pithelper.ui.utils.PitUIUtil;
+import io.github.christechs.pithelper.ui.utils.ThemeManager;
 import io.github.christechs.pithelper.ui.xml.ClayXmlEngine;
 import io.github.christechs.pithelper.ui.xml.XmlContext;
 import io.github.christechs.pithelper.ui.xml.nodes.XmlNode;
@@ -33,8 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static io.github.christechs.clayj.ClayJ.*;
-import static io.github.christechs.clayj.enums.SizingType.FIXED;
-import static io.github.christechs.clayj.enums.SizingType.GROW;
 
 public abstract class AutoConfigScreen extends ClayScreen {
 
@@ -48,10 +49,14 @@ public abstract class AutoConfigScreen extends ClayScreen {
     protected XmlNode searchResultsXml;
     protected XmlContext xmlContext;
 
-    protected float currentContentHeight = 0;
-
     public AutoConfigScreen(String title) {
         this.title = title;
+        if (ThemeManager.THEMES.size() <= 1) {
+            ThemeManager.loadThemesFromZip();
+            PitConfig.general().activeTheme = ThemeManager.THEMES.containsKey(PitConfig.general().activeTheme)
+                    ? PitConfig.general().activeTheme : "Challenger Deep";
+            ThemeManager.activeTheme = ThemeManager.THEMES.get(PitConfig.general().activeTheme);
+        }
     }
 
     public void addTab(IMenuTab tab) {
@@ -67,22 +72,29 @@ public abstract class AutoConfigScreen extends ClayScreen {
         searchResultsXml = ClayXmlEngine.load("ui/search_results.xml");
         xmlContext = new XmlContext();
 
-        xmlContext.bindString("menuTitle", () -> this.title);
-        xmlContext.bindString("scrollHeight", () -> String.valueOf(currentContentHeight - 40));
+        xmlContext.bindString("theme.bg", () -> ThemeManager.getHex("background"));
+        xmlContext.bindString("theme.sidebar", () -> ThemeManager.getHex("sidebar"));
+        xmlContext.bindString("theme.element", () -> ThemeManager.getHex("element"));
+        xmlContext.bindString("theme.text", () -> ThemeManager.getHex("foreground"));
+        xmlContext.bindString("theme.text_dim", () -> ThemeManager.getHex("text_dim"));
+        xmlContext.bindString("theme.accent", () -> ThemeManager.getHex("accent"));
 
+        xmlContext.bindString("menuTitle", () -> this.title);
         xmlContext.bindInput("globalSearchQuery", () -> globalSearchQuery, val -> globalSearchQuery = val);
 
         xmlContext.bindCustomRenderer("TabList", () -> {
-            if (!globalSearchQuery.isEmpty()) {
-                ClayComponents.tab("Tab_SearchResults", "Search Results", true, () -> {
-                });
-            } else {
-                for (int i = 0; i < tabs.size(); i++) {
-                    IMenuTab tab = tabs.get(i);
-                    ClayComponents.tab("Tab_" + i, tab.getName(), activeTab == tab, () -> {
-                        activeTab = tab;
-                        categorySearchQuery = "";
+            try (ClayElement wrap = el(decl().layout(layout().widthGrow().heightFit().dirTopToBottom().gap(8)))) {
+                if (!globalSearchQuery.isEmpty()) {
+                    ClayComponents.tab("Tab_SearchResults", "Search Results", true, () -> {
                     });
+                } else {
+                    for (int i = 0; i < tabs.size(); i++) {
+                        IMenuTab tab = tabs.get(i);
+                        ClayComponents.tab("Tab_" + i, tab.getName(), activeTab == tab, () -> {
+                            activeTab = tab;
+                            categorySearchQuery = "";
+                        });
+                    }
                 }
             }
         });
@@ -90,22 +102,22 @@ public abstract class AutoConfigScreen extends ClayScreen {
         xmlContext.bindCustomRenderer("ActiveContent", this::drawMainContent);
 
         xmlContext.bindCustomRenderer("ResultList", () -> {
-            boolean foundAny = false;
-            for (ConfigCategoryData cat : ConfigManager.CATEGORIES) {
-                for (ConfigElement el : cat.elements) {
-                    if (ClayConfigUI.elementMatches(el, globalSearchQuery)) {
-                        foundAny = true;
-                        ClayConfigUI.drawConfigElement(el, globalSearchQuery);
+            try (ClayElement wrap = el(decl().layout(layout().widthGrow().heightFit().dirTopToBottom().gap(12)))) {
+                boolean foundAny = false;
+                for (ConfigCategoryData cat : ConfigManager.CATEGORIES) {
+                    for (ConfigElement el : cat.elements) {
+                        if (ClayConfigUI.elementMatches(el, globalSearchQuery)) {
+                            foundAny = true;
+                            ClayConfigUI.drawConfigElement(el, globalSearchQuery);
+                        }
                     }
                 }
+                if (!foundAny) {
+                    text("No results found for '" + globalSearchQuery + "'", txt().size(1).color(ThemeManager.get("text_dim")));
+                }
+                try (ClayElement pad = el(decl().layout(layout().widthGrow().heightFixed(15)))) {
+                }
             }
-            if (!foundAny) text(
-                    "No results found for '"
-                            + globalSearchQuery + "'",
-                    txt().size(1).color(150, 150, 150, 255));
-
-            el(decl().layout(layout().sizing(GROW, 0, FIXED, 15)), () -> {
-            });
         });
     }
 
@@ -126,17 +138,17 @@ public abstract class AutoConfigScreen extends ClayScreen {
     protected void buildLayout(int mouseX, int mouseY, float deltaTime) {
         float winWidth = Math.min(650, this.width - 20);
         float winHeight = Math.min(400, this.height - 20);
-        this.currentContentHeight = winHeight - 40;
 
-        el(decl()
+        try (ClayElement root = el(decl()
                 .id("ScreenRoot")
                 .layout(layout()
-                        .sizing(GROW, 0, GROW, 0)
-                        .align(LayoutAlignmentX.CENTER, LayoutAlignmentY.CENTER)),
-                () -> el(decl().layout(layout().sizing(FIXED, winWidth, FIXED, winHeight)),
-                        () -> {
-                    if (xmlRoot != null) xmlRoot.render(xmlContext);
-                }));
+                        .widthGrow().heightGrow()
+                        .alignCenter()))) {
+
+            try (ClayElement inner = el(decl().layout(layout().widthFixed(winWidth).heightFixed(winHeight)))) {
+                if (xmlRoot != null) xmlRoot.render(xmlContext);
+            }
+        }
 
         onPostBuildLayout();
     }
@@ -153,9 +165,11 @@ public abstract class AutoConfigScreen extends ClayScreen {
     }
 
     public class ConfigCategoryTab implements IMenuTab {
+        private static final int ITEMS_PER_PAGE = 10;
         public final ConfigCategoryData category;
         private final XmlNode tabXml;
         private final XmlContext ctx;
+        private int currentPage = 0;
 
         public ConfigCategoryTab(ConfigCategoryData category) {
             this.category = category;
@@ -165,24 +179,59 @@ public abstract class AutoConfigScreen extends ClayScreen {
             ctx.bindString("categoryName", () -> category.name);
             ctx.bindString("wrapperId", () -> "ScrollWrapper_" + category.id);
             ctx.bindString("scrollId", () -> "Scroll_" + category.id);
-            ctx.bindString("scrollHeight", () -> String.valueOf(currentContentHeight - 40));
 
-            ctx.bindInput("categorySearchQuery", () -> categorySearchQuery, val -> categorySearchQuery = val);
+            ctx.bindInput("categorySearchQuery", () -> categorySearchQuery, val -> {
+                categorySearchQuery = val;
+                currentPage = 0;
+            });
 
             ctx.bindCustomRenderer("ElementList", () -> {
-                boolean foundAny = false;
-                for (ConfigElement element : category.elements) {
-                    if (ClayConfigUI.elementMatches(element, categorySearchQuery)) {
-                        foundAny = true;
-                        ClayConfigUI.drawConfigElement(element, categorySearchQuery);
+                try (ClayElement wrap = el(decl().layout(layout().widthGrow().heightFit().dirTopToBottom().gap(12)))) {
+
+                    List<ConfigElement> filtered = new ArrayList<>();
+                    for (ConfigElement element : category.elements) {
+                        if (ClayConfigUI.elementMatches(element, categorySearchQuery)) {
+                            filtered.add(element);
+                        }
+                    }
+
+                    if (filtered.isEmpty()) {
+                        text("No results found in this category.", txt().size(1).color(ThemeManager.get("text_dim")));
+                    } else {
+                        List<ConfigElement> normalElements = new ArrayList<>();
+                        List<ConfigElement> paginatedElements = new ArrayList<>();
+
+                        for (ConfigElement el : filtered) {
+                            if (category.name.equals("Themes") && el instanceof ConfigButton) {
+                                paginatedElements.add(el);
+                            } else {
+                                normalElements.add(el);
+                            }
+                        }
+
+                        for (ConfigElement el : normalElements) {
+                            ClayConfigUI.drawConfigElement(el, categorySearchQuery);
+                        }
+
+                        if (!paginatedElements.isEmpty()) {
+                            int totalPages = (int) Math.ceil((double) paginatedElements.size() / ITEMS_PER_PAGE);
+                            if (currentPage >= totalPages && totalPages > 0) currentPage = totalPages - 1;
+
+                            int startIdx = currentPage * ITEMS_PER_PAGE;
+                            int endIdx = Math.min(startIdx + ITEMS_PER_PAGE, paginatedElements.size());
+
+                            for (int i = startIdx; i < endIdx; i++) {
+                                ClayConfigUI.drawConfigElement(paginatedElements.get(i), categorySearchQuery);
+                            }
+
+                            PitUIUtil.drawPageNav(currentPage, totalPages, "CategoryPageNav",
+                                    () -> currentPage--,
+                                    () -> currentPage++);
+                        }
+                    }
+                    try (ClayElement pad = el(decl().layout(layout().widthGrow().heightFixed(15)))) {
                     }
                 }
-                if (!foundAny) text(
-                        "No results found in this category.",
-                        txt().size(1).color(150, 150, 150, 255)
-                );
-
-                el(decl().layout(layout().sizing(GROW, 0, FIXED, 15)), () -> {});
             });
         }
 

@@ -1,39 +1,28 @@
 /*
- * ClayJ is licensed under the zlib/libpng license.
- * Copyright (c) 2026 Christian Steenkamp
+ * Original Clay Library Copyright (c) 2024 Nic Barker
+ * Licensed under the zlib/libpng license.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from the
- * use of this software.
+ * See the LICENSE.md file in the root of this repository for the
+ * full zlib/libpng license text.
  *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- * claim that you wrote the original software. If you use this software in a
- * product, an acknowledgment in the product documentation would be
- * appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not
- * be misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
+ * Note: This source file has been altered from the original Clay
+ * distribution. The modifications are released into the public domain.
  */
-
 package io.github.christechs.clayj.core;
 
 import io.github.christechs.clayj.enums.RenderCommandType;
 import io.github.christechs.clayj.math.BoundingBox;
 
 public class RenderCommand {
-    public final BoundingBox boundingBox = new BoundingBox();
     public final RenderData renderData = new RenderData();
+    public BoundingBox boundingBox = new BoundingBox(0f, 0f, 0f, 0f);
     public Object userData;
     public int id;
     public short zIndex;
     public RenderCommandType commandType = RenderCommandType.NONE;
 
     public void set(RenderCommand other) {
-        this.boundingBox.set(other.boundingBox);
+        this.boundingBox = other.boundingBox;
         this.renderData.set(other.renderData);
         this.userData = other.userData;
         this.id = other.id;
@@ -42,10 +31,7 @@ public class RenderCommand {
     }
 
     public void reset() {
-        boundingBox.x = 0;
-        boundingBox.y = 0;
-        boundingBox.width = 0;
-        boundingBox.height = 0;
+        boundingBox = new BoundingBox(0f, 0f, 0f, 0f);
         renderData.reset();
         userData = null;
         id = 0;

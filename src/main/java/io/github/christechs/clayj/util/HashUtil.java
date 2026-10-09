@@ -1,22 +1,12 @@
 /*
- * ClayJ is licensed under the zlib/libpng license.
- * Copyright (c) 2026 Christian Steenkamp
+ * Original Clay Library Copyright (c) 2024 Nic Barker
+ * Licensed under the zlib/libpng license.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from the
- * use of this software.
+ * See the LICENSE file in the root of this repository for the
+ * full zlib/libpng license text.
  *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- * claim that you wrote the original software. If you use this software in a
- * product, an acknowledgment in the product documentation would be
- * appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not
- * be misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
+ * Note: This source file has been altered from the original Clay
+ * distribution. The modifications are released into the public domain.
  */
 
 package io.github.christechs.clayj.util;
@@ -25,12 +15,13 @@ import io.github.christechs.clayj.core.ElementId;
 
 public class HashUtil {
 
-    public static void hashNumber(int offset, int seed, ElementId outId) {
-        outId.set(hashNumber(offset, seed), offset, seed, "");
+    public static void hashNumber(int key, int offset, ElementId outId) {
+        int h = hashNumber(key, offset);
+        outId.set(h, offset, key, "");
     }
 
-    public static int hashNumber(int offset, int seed) {
-        int hash = seed;
+    public static int hashNumber(int key, int offset) {
+        int hash = key;
         hash += (offset + 48);
         hash += (hash << 10);
         hash ^= (hash >>> 6);
@@ -38,57 +29,103 @@ public class HashUtil {
         hash += (hash << 3);
         hash ^= (hash >>> 11);
         hash += (hash << 15);
+        return hash + 1;
+    }
 
+    public static void hashString(CharSequence key, int seed, ElementId outId) {
+        int h = hashString(key, seed);
+        outId.set(h, 0, h, key.toString());
+    }
+
+    public static int hashString(CharSequence key, int seed) {
+        int hash = seed;
+
+        for (int i = 0; i < key.length(); i++) {
+            hash += key.charAt(i);
+            hash += (hash << 10);
+            hash ^= (hash >>> 6);
+        }
+
+        hash += (hash << 3);
+        hash ^= (hash >>> 11);
+        hash += (hash << 15);
+        return hash + 1;
+    }
+
+    public static void hashStringWithOffset(CharSequence key, int offset, int seed, ElementId outId) {
+        int h = hashStringWithOffset(key, offset, seed);
+
+        int base = seed;
+        for (int i = 0; i < key.length(); i++) {
+            base += key.charAt(i);
+            base += (base << 10);
+            base ^= (base >>> 6);
+        }
+        base += (base << 3);
+        base ^= (base >>> 11);
+        base += (base << 15);
+
+        outId.set(h, offset, base + 1, key.toString());
+    }
+
+    public static int hashStringWithOffset(CharSequence key, int offset, int seed) {
+        int hash = 0;
+        int base = seed;
+
+        for (int i = 0; i < key.length(); i++) {
+            base += key.charAt(i);
+            base += (base << 10);
+            base ^= (base >>> 6);
+        }
+        hash = base;
+        hash += offset;
+        hash += (hash << 10);
+        hash ^= (hash >>> 6);
+
+        hash += (hash << 3);
+        hash ^= (hash >>> 11);
+        hash += (hash << 15);
+        return hash + 1;
+    }
+
+    public static int hashTextConfig(CharSequence text, int fontId, int fontSize, int letterSpacing) {
+        int hash = 0;
+        for (int i = 0; i < text.length(); i++) {
+            hash += text.charAt(i);
+            hash += (hash << 10);
+            hash ^= (hash >>> 6);
+        }
+        hash += fontId;
+        hash += (hash << 10);
+        hash ^= (hash >>> 6);
+
+        hash += fontSize;
+        hash += (hash << 10);
+        hash ^= (hash >>> 6);
+
+        hash += letterSpacing;
+        hash += (hash << 10);
+        hash ^= (hash >>> 6);
+
+        hash += (hash << 3);
+        hash ^= (hash >>> 11);
+        hash += (hash << 15);
         return hash + 1;
     }
 
     public static void hashString(CharSequence key, int offset, int seed, ElementId outId) {
-        int hash = 0;
-        int base = seed;
-
-        for (int i = 0; i < key.length(); i++) {
-            base += key.charAt(i);
-            base += (base << 10);
-            base ^= (base >>> 6);
+        if (offset == 0) {
+            hashString(key, seed, outId);
+        } else {
+            hashStringWithOffset(key, offset, seed, outId);
         }
-
-        hash = base;
-        hash += offset;
-        hash += (hash << 10);
-        hash ^= (hash >>> 6);
-
-        hash += (hash << 3);
-        base += (base << 3);
-        hash ^= (hash >>> 11);
-        base ^= (base >>> 11);
-        hash += (hash << 15);
-        base += (base << 15);
-
-        outId.set(hash + 1, offset, base + 1, key);
     }
 
     public static int hashString(CharSequence key, int offset, int seed) {
-        int hash = 0;
-        int base = seed;
-
-        for (int i = 0; i < key.length(); i++) {
-            base += key.charAt(i);
-            base += (base << 10);
-            base ^= (base >>> 6);
+        if (offset == 0) {
+            return hashString(key, seed);
+        } else {
+            return hashStringWithOffset(key, offset, seed);
         }
-
-        hash = base;
-        hash += offset;
-        hash += (hash << 10);
-        hash ^= (hash >>> 6);
-
-        hash += (hash << 3);
-        base += (base << 3);
-        hash ^= (hash >>> 11);
-        base ^= (base >>> 11);
-        hash += (hash << 15);
-        base += (base << 15);
-
-        return hash + 1;
     }
 }

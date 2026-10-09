@@ -19,7 +19,9 @@
 package io.github.christechs.pithelper;
 
 import io.github.christechs.config.ConfigManager;
-import io.github.christechs.pithelper.commands.*;
+import io.github.christechs.pithelper.commands.PitEnemyCommand;
+import io.github.christechs.pithelper.commands.PitFriendCommand;
+import io.github.christechs.pithelper.commands.PitHelperCommand;
 import io.github.christechs.pithelper.config.PitConfig;
 import io.github.christechs.pithelper.features.*;
 import io.github.christechs.pithelper.ui.hud.EventOverlay;
@@ -53,8 +55,6 @@ public class PitHelper {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         PitHelperCommand.register();
-        ViewInvCommand.register();
-        ApiExplorerCommand.register();
         PitFriendCommand.register();
         PitEnemyCommand.register();
 

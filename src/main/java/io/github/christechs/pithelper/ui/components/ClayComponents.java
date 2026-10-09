@@ -1,31 +1,16 @@
-/*
- * PitHelper - A Hypixel The Pit Helper Mod.
- * Copyright (C) 2026 Christian Steenkamp
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package io.github.christechs.pithelper.ui.components;
 
+import io.github.christechs.clayj.ClayJ.ClayElement;
+import io.github.christechs.clayj.config.FloatingConfigBuilder;
+import io.github.christechs.clayj.config.LayoutConfigBuilder;
 import io.github.christechs.clayj.core.ElementId;
 import io.github.christechs.clayj.core.LayoutElementHashMapItem;
 import io.github.christechs.clayj.core.ScrollContainerData;
-import io.github.christechs.clayj.enums.LayoutAlignmentX;
-import io.github.christechs.clayj.enums.LayoutAlignmentY;
-import io.github.christechs.clayj.math.CornerRadius;
+import io.github.christechs.clayj.enums.AttachToElement;
+import io.github.christechs.clayj.enums.FloatingAttachPoint;
 import io.github.christechs.clayj.math.Vector2;
 import io.github.christechs.clayj.util.HashUtil;
+import io.github.christechs.pithelper.ui.utils.ThemeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatAllowedCharacters;
@@ -37,12 +22,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static io.github.christechs.clayj.ClayJ.*;
-import static io.github.christechs.clayj.enums.AttachToElement.PARENT;
-import static io.github.christechs.clayj.enums.FloatingAttachPoint.LEFT_CENTER;
-import static io.github.christechs.clayj.enums.FloatingAttachPoint.LEFT_TOP;
-import static io.github.christechs.clayj.enums.LayoutAlignmentX.LEFT;
-import static io.github.christechs.clayj.enums.SizingType.FIXED;
-import static io.github.christechs.clayj.enums.SizingType.GROW;
 
 public class ClayComponents {
 
@@ -81,34 +60,33 @@ public class ClayComponents {
         boolean hover = pointerOver(id);
         if (isClicked(id)) onClick.run();
 
-        el(decl()
+        try (ClayElement btn = el(decl()
                 .id(id)
-                .bg(hover ? 100 : 70, 100, 200, 255)
-                .radius(new CornerRadius(6))
+                .bg(ThemeManager.get(hover ? "accent_hover" : "accent"))
+                .radius(6)
                 .layout(layout()
-                        .padding(8, 4)
-                        .align(LayoutAlignmentX.CENTER, LayoutAlignmentY.CENTER)),
-                () -> text(text, txt().size(1).color(255, 255, 255, 255))
-        );
+                        .widthFit().heightFit()
+                        .padding(8, 8, 4, 4)
+                        .alignCenter()))) {
+            text(text, txt().size(1).color(ThemeManager.get("background")));
+        }
     }
 
     public static void tab(String id, String label, boolean active, Runnable onClick) {
         boolean hover = pointerOver(id);
         if (isClicked(id)) onClick.run();
 
-        el(decl()
+        try (ClayElement tab = el(decl()
                 .id(id)
-                .bg(
-                        active ? 60 : (hover ? 40 : 30),
-                        active ? 120 : (hover ? 45 : 32),
-                        active ? 220 : (hover ? 50 : 38),
-                        255
-                ).radius(new CornerRadius(6))
+                .bg(ThemeManager.get(active ? "accent" : (hover ? "element" : "background")))
+                .radius(6)
                 .layout(layout()
-                        .sizing(GROW, 0, FIXED, 30)
-                        .padding(10, 0)
-                        .align(LEFT, LayoutAlignmentY.CENTER)),
-                () -> text(label, txt().size(1).color(255, 255, 255, 255)));
+                        .widthGrow().heightFixed(30)
+                        .padding(10, 10, 0, 0)
+                        .alignLeft()
+                        .alignCenterY()))) {
+            text(label, txt().size(1).color(ThemeManager.get(active ? "background" : "foreground")));
+        }
     }
 
     public static void scrollbar(String containerId) {
@@ -119,11 +97,11 @@ public class ClayComponents {
 
         ScrollBounds bounds = scrollCache.computeIfAbsent(containerId, k -> new ScrollBounds());
 
-        if (data.found && data.scrollContainerDimensions.height > 0) {
-            bounds.containerHeight = data.scrollContainerDimensions.height;
-            bounds.contentHeight = data.contentDimensions.height;
+        if (data.found && data.scrollContainerDimensions.height() > 0) {
+            bounds.containerHeight = data.scrollContainerDimensions.height();
+            bounds.contentHeight = data.contentDimensions.height();
             if (data.scrollPosition != null) {
-                bounds.scrollY = data.scrollPosition.y;
+                bounds.scrollY = data.scrollPosition.y();
             }
         }
 
@@ -134,14 +112,13 @@ public class ClayComponents {
         if (scrollableRange <= 2.0f) return;
 
         String trackId = "ScrollTrack_" + containerId;
-        el(decl()
+        try (ClayElement track = el(decl()
                 .id(trackId)
-                .bg(20, 20, 25, 255)
+                .bg(ThemeManager.get("background"))
                 .radius(2)
-                .layout(layout()
-                        .sizing(FIXED, 4, GROW, 0)),
-                () -> renderScrollThumb(containerId, data, bounds, trackHeight, contentHeight, scrollableRange)
-        );
+                .layout(layout().widthFixed(4).heightGrow()))) {
+            renderScrollThumb(containerId, data, bounds, trackHeight, contentHeight, scrollableRange);
+        }
     }
 
     private static void renderScrollThumb(
@@ -170,35 +147,28 @@ public class ClayComponents {
 
         if (isActive && data.scrollPosition != null) {
             float deltaRatio = (float) mouseDeltaY / maxThumbY;
-            data.scrollPosition.y -= deltaRatio * scrollableRange;
+            float newY = data.scrollPosition.y() - (deltaRatio * scrollableRange);
 
-            if (data.scrollPosition.y > 0) data.scrollPosition.y = 0;
-            if (data.scrollPosition.y < -scrollableRange) data.scrollPosition.y = -scrollableRange;
+            if (newY > 0) newY = 0;
+            if (newY < -scrollableRange) newY = -scrollableRange;
 
-            thumbY = (-data.scrollPosition.y / scrollableRange) * maxThumbY;
+            data.scrollPosition = new Vector2(data.scrollPosition.x(), newY);
+            thumbY = (-data.scrollPosition.y() / scrollableRange) * maxThumbY;
         }
 
         float finalThumbY = Math.max(0, Math.min(thumbY, maxThumbY));
 
-        el(decl()
+        try (ClayElement thumb = el(decl()
                 .id(thumbId)
-                .bg(
-                        isActive || isHovered ? 100 : 80,
-                        isActive || isHovered ? 100 : 80,
-                        isActive || isHovered ? 110 : 90,
-                        255
-                )
+                .bg(ThemeManager.get(isActive || isHovered ? "accent_hover" : "accent"))
                 .radius(2)
-                .floating(
-                        PARENT,
-                        LEFT_TOP,
-                        LEFT_TOP,
-                        new Vector2(0, finalThumbY),
-                        0
-                ).layout(layout()
-                        .sizing(GROW, 0, FIXED, thumbHeight)),
-                () -> {}
-        );
+                .floating(new FloatingConfigBuilder()
+                        .attachTo(AttachToElement.PARENT)
+                        .attach(FloatingAttachPoint.LEFT_TOP, FloatingAttachPoint.LEFT_TOP)
+                        .offset(0, finalThumbY)
+                        .zIndex((short) 0))
+                .layout(layout().widthGrow().heightFixed(thumbHeight)))) {
+        }
     }
 
     public static void textInput(String id, String placeholder, String value, float width, Consumer<String> onChange) {
@@ -207,30 +177,25 @@ public class ClayComponents {
 
         String display = value.isEmpty() && !isFocused ? "§8" + placeholder : value;
 
-        el(decl()
+        LayoutConfigBuilder lyt = layout()
+                .heightFixed(24)
+                .padding(8, 8, 0, 0)
+                .alignLeft().alignCenterY();
+
+        if (width > 0) lyt.widthFixed(width);
+        else lyt.widthGrow();
+
+        try (ClayElement input = el(decl()
                 .id(id)
-                .bg(
-                        isFocused ? 25 : 20,
-                        isFocused ? 27 : 22,
-                        isFocused ? 31 : 26,
-                        255
-                )
+                .bg(ThemeManager.get(isFocused ? "element" : "background"))
                 .radius(4)
-                .layout(layout()
-                        .sizing(
-                                width > 0 ? FIXED : GROW,
-                                width > 0 ? width : 0,
-                                FIXED, 24
-                        )
-                        .padding(8, 0)
-                        .align(LEFT, LayoutAlignmentY.CENTER)),
-                () -> {
-                    text(display, txt().size(1).color(255, 255, 255, 255));
-                    if (isFocused && (System.currentTimeMillis() / 500) % 2 == 0) {
-                        renderCursor(value);
-                    }
-                }
-        );
+                .layout(lyt))) {
+
+            text(display, txt().size(1).color(ThemeManager.get("foreground")));
+            if (isFocused && (System.currentTimeMillis() / 500) % 2 == 0) {
+                renderCursor(value);
+            }
+        }
     }
 
     private static void handleTextInputInteraction(String id, String value, Consumer<String> onChange, boolean isFocused) {
@@ -239,9 +204,12 @@ public class ClayComponents {
             activeText = new StringBuilder(value);
             activeTextCallback = onChange;
 
-            LayoutElementHashMapItem item = getContext().getHashMapItem(HashUtil.hashString(id, 0, 0));
+            ElementId eid = new ElementId();
+            HashUtil.hashString(id, 0, 0, eid);
+            LayoutElementHashMapItem item = getContext().getHashMapItem(eid.id);
+
             if (item != null) {
-                float localX = mouseX - item.boundingBox.x - 8;
+                float localX = mouseX - item.boundingBox.x() - 8;
                 int newCursorPos = 0;
                 for (int i = 0; i <= value.length(); i++) {
                     int w = Minecraft.getMinecraft().fontRendererObj.getStringWidth(value.substring(0, i));
@@ -269,23 +237,19 @@ public class ClayComponents {
         int safeCursor = Math.min(cursorPos, value.length());
         int cursorOffset = Minecraft.getMinecraft().fontRendererObj.getStringWidth(value.substring(0, safeCursor));
 
-        el(decl()
-                .bg(255, 255, 255, 255)
-                .floating(
-                        PARENT,
-                        LEFT_CENTER,
-                        LEFT_CENTER,
-                        new Vector2(cursorOffset + 8, 0),
-                        0)
-                .layout(layout()
-                        .sizing(FIXED, 2, FIXED, 12)),
-                () -> {}
-        );
+        try (ClayElement cursor = el(decl()
+                .bg(ThemeManager.get("foreground"))
+                .floating(new FloatingConfigBuilder()
+                        .attachTo(AttachToElement.PARENT)
+                        .attach(FloatingAttachPoint.LEFT_CENTER, FloatingAttachPoint.LEFT_CENTER)
+                        .offset(cursorOffset + 8, 0)
+                        .zIndex((short) 0))
+                .layout(layout().widthFixed(2).heightFixed(12)))) {
+        }
     }
 
     public static void onKeyTyped(char typedChar, int keyCode) {
         if (activeTextInputId.isEmpty() || activeTextCallback == null) return;
-
         if (keyCode == Keyboard.KEY_BACK && cursorPos > 0) {
             activeText.deleteCharAt(cursorPos - 1);
             cursorPos--;
@@ -301,22 +265,16 @@ public class ClayComponents {
             activeTextInputId = "";
             activeTextCallback = null;
         } else if (keyCode == Keyboard.KEY_V
-                && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) {
-
+                && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) {
             String clipboard = GuiScreen.getClipboardString();
             if (clipboard != null && !clipboard.isEmpty()) {
                 activeText.insert(cursorPos, clipboard);
                 cursorPos += clipboard.length();
                 activeTextCallback.accept(activeText.toString());
             }
-
         } else if (keyCode == Keyboard.KEY_C
-                && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) {
-
+                && (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) {
             GuiScreen.setClipboardString(activeText.toString());
-
         } else if (ChatAllowedCharacters.isAllowedCharacter(typedChar)) {
             activeText.insert(cursorPos, typedChar);
             cursorPos++;

@@ -19,7 +19,7 @@
 package io.github.christechs.pithelper.commands;
 
 import io.github.christechs.config.ConfigManager;
-import io.github.christechs.pithelper.api.PitHelperAPI;
+import io.github.christechs.pithelper.api.MinecraftAPI;
 import io.github.christechs.pithelper.config.PitConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -102,7 +102,7 @@ public class PitEnemyCommand extends CommandBase {
         } else {
             CompletableFuture.runAsync(() -> {
                 try {
-                    String uuid = PitHelperAPI.resolveUuid(name);
+                    String uuid = MinecraftAPI.resolveUuid(name);
                     Minecraft.getMinecraft().addScheduledTask(() -> addEnemy(sender, uuid, name));
                 } catch (Exception e) {
                     Minecraft.getMinecraft().addScheduledTask(() ->

@@ -1,30 +1,19 @@
 /*
- * ClayJ is licensed under the zlib/libpng license.
- * Copyright (c) 2026 Christian Steenkamp
+ * Original Clay Library Copyright (c) 2024 Nic Barker
+ * Licensed under the zlib/libpng license.
  *
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from the
- * use of this software.
+ * See the LICENSE.md file in the root of this repository for the
+ * full zlib/libpng license text.
  *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- * claim that you wrote the original software. If you use this software in a
- * product, an acknowledgment in the product documentation would be
- * appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not
- * be misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
+ * Note: This source file has been altered from the original Clay
+ * distribution. The modifications are released into the public domain.
  */
-
 package io.github.christechs.clayj.core;
 
 import io.github.christechs.clayj.math.Dimensions;
 
 public class TextElementData {
-    public final Dimensions preferredDimensions = new Dimensions();
+    public Dimensions preferredDimensions = new Dimensions(0f, 0f);
     public CharSequence text;
     public int elementIndex = -1;
     public int wrappedLinesStart = 0;
@@ -32,8 +21,7 @@ public class TextElementData {
 
     public void reset() {
         text = null;
-        preferredDimensions.width = 0f;
-        preferredDimensions.height = 0f;
+        preferredDimensions = new Dimensions(0f, 0f);
         elementIndex = -1;
         wrappedLinesStart = 0;
         wrappedLinesLength = 0;
